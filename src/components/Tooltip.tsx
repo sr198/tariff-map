@@ -1,25 +1,18 @@
 import React from 'react';
 
 interface TooltipProps {
+  countryName: string;
   data: {
-    countryName: string;
-    data: {
-      usImportTariff: number;
-      countryExportTariff: number;
-      tradeBalance: number;
-      partnerStatus: string;
-    };
-    x: number;
-    y: number;
-  } | null;
+    usImportTariff: number;
+    countryExportTariff: number;
+    tradeBalance: number;
+    partnerStatus: string;
+  };
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ data }) => {
-  if (!data) return null;
+const Tooltip: React.FC<TooltipProps> = ({ countryName, data: countryData }) => {
+  if (!countryData) return null;
 
-  const { countryName, data: countryData, x, y } = data;
-  
-  // Format values with proper handling for undefined data
   const formattedValues = {
     usImportTariff: countryData?.usImportTariff ? countryData.usImportTariff.toFixed(1) : 'N/A',
     countryExportTariff: countryData?.countryExportTariff ? countryData.countryExportTariff.toFixed(1) : 'N/A',
@@ -30,7 +23,6 @@ const Tooltip: React.FC<TooltipProps> = ({ data }) => {
   return (
     <div
       className="absolute z-50 bg-white shadow-lg rounded-lg p-3 max-w-xs transform -translate-x-1/2 -translate-y-full"
-      style={{ left: x, top: y - 10 }}
     >
       <div className="font-semibold text-gray-900 mb-2">{countryName}</div>
       

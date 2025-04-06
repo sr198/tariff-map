@@ -5,7 +5,7 @@ interface TooltipProps {
     countryName: string;
     data: {
       usImportTariff: number;
-      exportTariff: number;
+      countryExportTariff: number;
       tradeBalance: number;
       partnerStatus: string;
     };
@@ -22,7 +22,7 @@ const Tooltip: React.FC<TooltipProps> = ({ data }) => {
   // Format values with proper handling for undefined data
   const formattedValues = {
     usImportTariff: countryData?.usImportTariff ? countryData.usImportTariff.toFixed(1) : 'N/A',
-    exportTariff: countryData?.exportTariff ? countryData.exportTariff.toFixed(1) : 'N/A',
+    countryExportTariff: countryData?.countryExportTariff ? countryData.countryExportTariff.toFixed(1) : 'N/A',
     tradeBalance: countryData?.tradeBalance ? countryData.tradeBalance.toFixed(1) : 'N/A',
     partnerStatus: countryData?.partnerStatus || 'Unknown'
   };
@@ -41,7 +41,7 @@ const Tooltip: React.FC<TooltipProps> = ({ data }) => {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Export Tariff:</span>
-          <span className="font-medium">{formattedValues.exportTariff}%</span>
+          <span className="font-medium">{formattedValues.countryExportTariff}%</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Trade Balance:</span>

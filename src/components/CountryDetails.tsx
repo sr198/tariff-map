@@ -4,7 +4,7 @@ interface CountryDetailsProps {
   countryName: string;
   data: {
     usImportTariff: number;
-    exportTariff: number;
+    countryExportTariff: number;
     tradeBalance: number;
   };
   onBack: () => void;
@@ -63,8 +63,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryName, data, onBa
           <div className="text-2xl font-semibold text-gray-900">{data.usImportTariff.toFixed(1)}%</div>
         </div>
         <div className="bg-gray-50 rounded-lg p-4">
-          <div className="text-sm text-gray-500">Export Tariff</div>
-          <div className="text-2xl font-semibold text-gray-900">{data.exportTariff.toFixed(1)}%</div>
+          <div className="text-sm text-gray-500">Country Export Tariff</div>
+          <div className="text-2xl font-semibold text-gray-900">{data.countryExportTariff.toFixed(1)}%</div>
         </div>
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="text-sm text-gray-500">Trade Balance</div>

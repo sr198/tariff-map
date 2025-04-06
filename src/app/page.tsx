@@ -23,7 +23,7 @@ const WorldMapComponent = dynamic(() => import('@/components/WorldMap'), {
 
 interface CountryData {
   usImportTariff: number;
-  exportTariff: number;
+  countryExportTariff: number;
   tradeBalance: number;
 }
 
@@ -35,22 +35,22 @@ interface CountryDataMap {
 const mockData: Record<string, CountryData> = {
   'China': {
     usImportTariff: 25.0,
-    exportTariff: 20.0,
+    countryExportTariff: 20.0,
     tradeBalance: -419.2e9,
   },
   'Germany': {
     usImportTariff: 15.0,
-    exportTariff: 12.5,
+    countryExportTariff: 12.5,
     tradeBalance: -78.3e9,
   },
   'France': {
     usImportTariff: 18.0,
-    exportTariff: 15.0,
+    countryExportTariff: 15.0,
     tradeBalance: -45.2e9,
   },
   'United Kingdom': {
     usImportTariff: 12.0,
-    exportTariff: 10.0,
+    countryExportTariff: 10.0,
     tradeBalance: -25.1e9,
   },
   // Add more countries as needed

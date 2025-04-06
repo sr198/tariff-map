@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# US Trade Tariffs Map
+
+An interactive visualization of US trade relationships and tariffs with countries around the world. This application provides a map-based interface where users can:
+
+- View a world map colored by tariff rates
+- Hover over countries to see basic trade information
+- Click on countries to view detailed trade statistics
+- Explore trade balances and tariff relationships
+
+## Features
+
+- Interactive world map visualization
+- Real-time country data on hover
+- Detailed trade statistics for each country
+- Responsive design for all screen sizes
+- Color-coded visualization of tariff rates
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18.0 or later
+- npm 9.0 or later
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/tariff-map.git
+cd tariff-map
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-## Learn More
+## Development
 
-To learn more about Next.js, take a look at the following resources:
+The application is built with:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- React Simple Maps
+- Material-UI
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Project Structure
 
-## Deploy on Vercel
+```
+src/
+  ├── app/              # Next.js app directory
+  ├── components/       # React components
+  │   ├── WorldMap.tsx     # Interactive map component
+  │   └── CountryDetails.tsx # Country information display
+  └── types/           # TypeScript type definitions
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Integration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application is designed to work with a REST API that provides trade data. Currently using mock data, but ready to integrate with your API when available.
+
+Expected API response format:
+
+```typescript
+interface CountryData {
+  usImportTariff: number;
+  countryExportTariff: number;
+  tradeBalance: number;
+}
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

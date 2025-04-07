@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "US Tariff Map",
   description: "Interactive visualization of US trade tariffs and relationships",
+  icons: null,
 };
 
 export default function RootLayout({
@@ -16,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>{children}</body>
     </html>
   );
 }

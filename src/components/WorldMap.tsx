@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, memo } from 'react';
+import React, { useMemo, useCallback, memo, useEffect, useState } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -7,6 +7,8 @@ import {
 } from 'react-simple-maps';
 import { scaleLinear } from 'd3-scale';
 import Tooltip from './Tooltip';
+import CountryDetails from './CountryDetails';
+import { fetchTariffMap, TariffMapResponse } from '@/services/tradeService';
 
 // Use CDN URL for the geography data
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -14,30 +16,27 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 // Color legend data
 const colorLegendStops = [
   { value: 0, label: '0%' },
-  { value: 10, label: '10%' },
-  { value: 20, label: '20%' },
-  { value: 30, label: '30%' },
-  { value: 40, label: '40%' },
-  { value: 50, label: '50%' },
+  { value: 70, label: '70%' }
 ];
 
 // Memoize the color scale function
 const createColorScale = () => {
   return scaleLinear<string>()
-    .domain([0, 10, 20, 30, 40, 50])
+    .domain([0, 10, 20, 30, 40, 50, 60, 70])
     .range([
-      '#F1F5F9', // No data
-      '#E2E8F0', // 0-10%
-      '#94A3B8', // 10-20%
-      '#475569', // 20-30%
-      '#1E293B', // 30-40%
-      '#0F172A'  // 40-50%
+      '#F1F5F9', // 0% - Light gray
+      '#CBD5E1', // 10% - Slightly darker gray
+      '#94A3B8', // 20% - Medium gray
+      '#475569', // 30% - Dark gray
+      '#1E293B', // 40% - Very dark gray
+      '#0F172A', // 50% - Almost black
+      '#020617'  // 60-70% - Black
     ]);
 };
 
 // US specific styling
 const US_STYLES = {
-  fill: '#10A981', // Distinct green color for US
+  fill: '#C4C3C8', 
   stroke: '#FFFFFF',
   strokeWidth: 0.75, // Slightly thicker border for emphasis
 };
@@ -59,9 +58,18 @@ const tooltipStyles = (x: number, y: number) => ({
   transform: 'translate(0, -100%)',
 });
 
+// Add EU countries list
+const EU_COUNTRIES = [
+  'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 
+  'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 
+  'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 
+  'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 
+  'Slovenia', 'Spain', 'Sweden'
+];
+
 interface WorldMapProps {
-  data: Record<string, any>;
-  onCountryClick: (countryName: string) => void;
+  data: Record<string, string>;
+  onCountryClick: (countryName: string, countryName2?: string) => void;
   onCountryHover: (countryName: string | null) => void;
 }
 
@@ -74,6 +82,74 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
   } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [zoom, setZoom] = React.useState(1);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [selectedCountry, setSelectedCountry] = React.useState<string | null>(null);
+  const [selectedCountryData, setSelectedCountryData] = React.useState<any>(null);
+  const [tariffData, setTariffData] = useState<Record<string, { us_reciprocal_tariff: number; trump_claimed_tariff: number }>>({});
+  const [loading, setLoading] = useState(true);
+  const [geographies, setGeographies] = useState<any[]>([]);
+
+  // Fetch tariff data
+  useEffect(() => {
+    const loadTariffData = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching tariff map data...');
+        const response = await fetchTariffMap();
+        console.log('Tariff map response:', response);
+        
+        // Convert array to object for easier lookup
+        // Use country_name as the key instead of country_code
+        const tariffMap = response.tariffs.reduce((acc, item) => {
+          acc[item.country_name] = {
+            us_reciprocal_tariff: item.us_reciprocal_tariff,
+            trump_claimed_tariff: item.trump_claimed_tariff
+          };
+          return acc;
+        }, {} as Record<string, { us_reciprocal_tariff: number; trump_claimed_tariff: number }>);
+        
+        // Special handling for EU countries
+        if (tariffMap['European Union'] !== undefined) {
+          const euTariff = tariffMap['European Union'];
+          console.log(`Found EU tariff rate: ${euTariff}`);
+          
+          // Add the EU tariff rate to all EU countries
+          EU_COUNTRIES.forEach(country => {
+            tariffMap[country] = euTariff;
+          });
+          
+          console.log('Added EU tariff rate to all EU countries');
+        }
+        
+        console.log('Processed tariff map:', tariffMap);
+        console.log('Country names in tariff data:', Object.keys(tariffMap));
+        
+        setTariffData(tariffMap);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load tariff data');
+        console.error('Error loading tariff data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTariffData();
+  }, []);
+
+  // Check if device is mobile
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   // Memoize the color scale
   const colorScale = useMemo(() => createColorScale(), []);
@@ -83,36 +159,95 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
     if (countryName === 'United States of America') {
       return US_STYLES.fill;
     }
-    const countryData = data[countryName];
-    if (!countryData?.usImportTariff) return '#F1F5F9';
-    return colorScale(Math.min(countryData.usImportTariff, 50));
-  }, [data, colorScale]);
-
-  // Memoize the handleCountryClick function
-  const handleCountryClick = useCallback((countryName: string) => {
-    if (countryName !== 'United States of America') {
-      onCountryClick(countryName);
+    
+    // Get the country code from the data
+    const countryData = tariffData[countryName];
+    
+    console.log(`Getting color for country: ${countryName}`);
+    
+    if (countryData) {
+      const color = colorScale(countryData.us_reciprocal_tariff);
+      console.log(`Color for ${countryName}: ${color}, tariff: ${countryData.us_reciprocal_tariff}`);
+      return color;
     }
-  }, [onCountryClick]);
+    
+    console.log(`No tariff data for ${countryName}, using default color`);
+    return '#F1F5F9'; // Light gray for countries not in our data
+  }, [tariffData, colorScale]);
 
-  // Memoize the handleMouseEnter function
+  // Handle country click on map
+  const handleCountryClick = useCallback((countryName: string) => {
+    console.log('Country clicked:', countryName);
+    console.log('Available data:', tariffData);
+    
+    if (countryName !== 'United States of America') {
+      // Check if the country exists in our data
+      if (tariffData[countryName] !== undefined) {
+        console.log('Country found in data:', countryName, tariffData[countryName]);
+        onCountryClick(countryName, countryName);
+      } else {
+        console.log('Country not found in data:', countryName);
+        
+        // Check if it's an EU country
+        if (EU_COUNTRIES.includes(countryName) && tariffData['European Union'] !== undefined) {
+          console.log('EU country found, using EU tariff rate:', tariffData['European Union']);
+          onCountryClick(countryName, countryName);
+          return;
+        }
+        
+        // Try to find a close match
+        const countryEntries = Object.entries(tariffData);
+        const closeMatch = countryEntries.find(([name, _]) => 
+          name.toLowerCase().includes(countryName.toLowerCase()) || 
+          countryName.toLowerCase().includes(name.toLowerCase())
+        );
+        
+        if (closeMatch) {
+          console.log('Found close match:', closeMatch[0]);
+          onCountryClick(closeMatch[0], closeMatch[0]);
+        } else {
+          console.log('No matching country entry found in data');
+        }
+      }
+    }
+  }, [tariffData, onCountryClick]);
+
+  // Handle mouse enter for tooltip
   const handleMouseEnter = useCallback((countryName: string, event: React.MouseEvent) => {
     // Always call onCountryHover for all countries to ensure hover effects work
     onCountryHover(countryName);
     
     // Only show tooltip for non-US countries with data
     if (countryName !== 'United States of America') {
-      const countryData = data[countryName];
+      console.log(`Mouse enter on ${countryName}`);
+      
+      // Check if we have direct data or if it's an EU country
+      let countryData = tariffData[countryName];
+      let displayName = countryName;
+      
+      // If no direct data but it's an EU country, use the EU tariff rate
+      if (!countryData && EU_COUNTRIES.includes(countryName) && tariffData['European Union'] !== undefined) {
+        countryData = tariffData['European Union'];
+        displayName = `${countryName} (EU)`;
+        console.log(`Using EU tariff rate for ${countryName}`);
+      }
+      
       if (countryData) {
+        console.log(`Showing tooltip for ${displayName}`);
         setTooltipData({
-          countryName,
-          data: countryData,
+          countryName: displayName,
+          data: { 
+            trump_claimed_tariff: countryData.trump_claimed_tariff,
+            us_reciprocal_tariff: countryData.us_reciprocal_tariff
+          },
           x: event.clientX,
           y: event.clientY,
         });
+      } else {
+        console.log(`No tariff data for ${countryName}`);
       }
     }
-  }, [data, onCountryHover]);
+  }, [tariffData, onCountryHover]);
 
   // Memoize the handleMouseLeave function
   const handleMouseLeave = useCallback(() => {
@@ -129,6 +264,14 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
     setZoom(prev => Math.max(prev / 1.5, 1));
   }, []);
 
+  if (loading) {
+    return (
+      <div className="w-full aspect-[21/9] bg-gray-100 flex items-center justify-center">
+        Loading Map...
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="relative w-full aspect-[21/9] bg-red-50 rounded-lg flex items-center justify-center">
@@ -138,104 +281,145 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
   }
 
   return (
-    <div className="relative w-full" style={{ aspectRatio: '21/9' }}>
-      <ComposableMap
-        projection="geoMercator"
-        projectionConfig={projectionConfig}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <ZoomableGroup zoom={zoom}>
-          <Geographies geography={geoUrl}>
-            {({ geographies }) =>
-              geographies
-                .filter(geo => geo.properties.name !== 'Antarctica')
-                .map(geo => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    onMouseEnter={(event) => handleMouseEnter(geo.properties.name, event)}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={() => handleCountryClick(geo.properties.name)}
-                    style={{
-                      default: {
-                        fill: getCountryColor(geo.properties.name),
-                        stroke: '#FFFFFF',
-                        strokeWidth: geo.properties.name === 'United States of America' ? US_STYLES.strokeWidth : 0.5,
-                        outline: 'none',
-                      },
-                      hover: {
-                        fill: geo.properties.name === 'United States of America' 
-                          ? US_STYLES.fill 
-                          : getCountryColor(geo.properties.name),
-                        stroke: '#FFFFFF',
-                        strokeWidth: geo.properties.name === 'United States of America' ? US_STYLES.strokeWidth : 0.75,
-                        outline: 'none',
-                        cursor: geo.properties.name === 'United States of America' ? 'default' : 'pointer',
-                      },
-                      pressed: {
-                        fill: geo.properties.name === 'United States of America' 
-                          ? US_STYLES.fill 
-                          : getCountryColor(geo.properties.name),
-                        stroke: '#FFFFFF',
-                        strokeWidth: geo.properties.name === 'United States of America' ? US_STYLES.strokeWidth : 0.75,
-                        outline: 'none',
-                      },
-                    }}
-                  />
-                ))
-            }
-          </Geographies>
-        </ZoomableGroup>
-      </ComposableMap>
-
-      {/* Zoom Controls */}
-      <div className="absolute right-4 top-4 flex flex-col space-y-2">
-        <button
-          onClick={handleZoomIn}
-          className="bg-white rounded-lg shadow-lg p-2 hover:bg-gray-50 transition-colors"
-          aria-label="Zoom in"
+    <div className="relative w-full">
+      <div style={{ aspectRatio: '21/9' }} className="relative">
+        <ComposableMap
+          projection="geoMercator"
+          projectionConfig={projectionConfig}
+          style={{ width: '100%', height: '100%' }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className="bg-white rounded-lg shadow-lg p-2 hover:bg-gray-50 transition-colors"
-          aria-label="Zoom out"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
+          <ZoomableGroup zoom={zoom}>
+            <Geographies geography={geoUrl}>
+              {({ geographies }) => {
+                console.log('Rendering geographies, count:', geographies.length);
+                console.log('First few country names:', geographies.slice(0, 5).map(geo => geo.properties.name));
+                
+                setGeographies(geographies);
+                
+                return geographies
+                  .filter(geo => geo.properties.name !== 'Antarctica')
+                  .map(geo => {
+                    const countryName = geo.properties.name;
+                    console.log(`Rendering country: ${countryName}`);
+                    
+                    // Check if we have tariff data for this country name
+                    let hasTariffData = tariffData[countryName] !== undefined;
+                    let tariffRate = tariffData[countryName]?.us_reciprocal_tariff;
+                    
+                    // Special handling for EU countries
+                    if (!hasTariffData && EU_COUNTRIES.includes(countryName) && tariffData['European Union'] !== undefined) {
+                      hasTariffData = true;
+                      tariffRate = tariffData['European Union'].us_reciprocal_tariff;
+                      console.log(`Using EU tariff rate for ${countryName}: ${tariffRate}`);
+                    }
+                    
+                    console.log(`Has tariff data for ${countryName}: ${hasTariffData}`);
+                    
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        onMouseEnter={(event) => handleMouseEnter(countryName, event)}
+                        onMouseLeave={handleMouseLeave}
+                        onClick={() => handleCountryClick(countryName)}
+                        style={{
+                          default: {
+                            fill: hasTariffData ? colorScale(tariffRate) : '#F1F5F9',
+                            stroke: '#FFFFFF',
+                            strokeWidth: countryName === 'United States of America' ? US_STYLES.strokeWidth : 0.5,
+                            outline: 'none',
+                          },
+                          hover: {
+                            fill: countryName === 'United States of America' 
+                              ? US_STYLES.fill 
+                              : hasTariffData ? colorScale(tariffRate) : '#F1F5F9',
+                            stroke: '#FFFFFF',
+                            strokeWidth: countryName === 'United States of America' ? US_STYLES.strokeWidth : 0.75,
+                            outline: 'none',
+                            cursor: countryName === 'United States of America' ? 'default' : 'pointer',
+                          },
+                          pressed: {
+                            fill: countryName === 'United States of America' 
+                              ? US_STYLES.fill 
+                              : hasTariffData ? colorScale(tariffRate) : '#F1F5F9',
+                            stroke: '#FFFFFF',
+                            strokeWidth: countryName === 'United States of America' ? US_STYLES.strokeWidth : 0.75,
+                            outline: 'none',
+                          },
+                        }}
+                      />
+                    );
+                  });
+              }}
+            </Geographies>
+          </ZoomableGroup>
+        </ComposableMap>
 
-      {/* Color Legend - Made more compact for mobile */}
-      <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 bg-white rounded-lg shadow-lg p-2 md:p-4">
-        <div className="text-[10px] md:text-sm font-medium mb-1 md:mb-2">Tariff Rate</div>
-        <div className="flex items-center gap-1">
-          <div className="h-1.5 md:h-2 w-24 md:w-48 bg-gradient-to-r from-[#F1F5F9] via-[#7BA9E1] to-[#0E3F97] rounded" />
+        {/* Zoom Controls - Adjusted positioning */}
+        <div className="absolute right-4 top-4 flex flex-col space-y-2 z-10">
+          <button
+            onClick={handleZoomIn}
+            className="bg-white rounded-lg shadow-lg p-2 hover:bg-gray-50 transition-colors"
+            aria-label="Zoom in"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="bg-white rounded-lg shadow-lg p-2 hover:bg-gray-50 transition-colors"
+            aria-label="Zoom out"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
         </div>
-        <div className="flex justify-between mt-0.5 md:mt-1">
-          {colorLegendStops.map(stop => (
-            <div key={stop.value} className="text-[8px] md:text-xs text-gray-600">
-              {stop.label}
+
+        {/* Color Legend - Made more compact for mobile */}
+        {!isMobile && (
+          <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 bg-white rounded-lg shadow-lg p-2 md:p-4">
+            <div className="text-[10px] md:text-sm font-medium mb-1 md:mb-2">Tariff Rate</div>
+            <div className="flex items-center gap-1">
+              <div className="h-1.5 md:h-2 w-24 md:w-48 bg-gradient-to-r from-[#F1F5F9] via-[#475569] to-[#020617] rounded" />
             </div>
-          ))}
-        </div>
+            <div className="flex justify-between mt-0.5 md:mt-1">
+              {colorLegendStops.map(stop => (
+                <div key={stop.value} className="text-[8px] md:text-xs text-gray-600">
+                  {stop.label}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Last Updated - Made more compact for mobile */}
+        {!isMobile && (
+          <div className="absolute right-2 md:right-4 bottom-2 md:bottom-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm px-2 py-1 md:px-4 md:py-2">
+            <div className="text-[8px] md:text-xs text-gray-500">Last Updated: April 7 2025</div>
+          </div>
+        )}
+
+        {tooltipData && (
+          <div style={tooltipStyles(tooltipData.x, tooltipData.y)}>
+            <Tooltip
+              countryName={tooltipData.countryName}
+              data={tooltipData.data}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Last Updated - Made more compact for mobile */}
-      <div className="absolute right-2 md:right-4 bottom-2 md:bottom-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm px-2 py-1 md:px-4 md:py-2">
-        <div className="text-[8px] md:text-xs text-gray-500">Last Updated: Jan 2024</div>
-      </div>
-
-      {tooltipData && (
-        <div style={tooltipStyles(tooltipData.x, tooltipData.y)}>
-          <Tooltip
-            countryName={tooltipData.countryName}
-            data={tooltipData.data}
-          />
+      {/* Country Details Modal - Using the existing CountryDetails component */}
+      {selectedCountry && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <CountryDetails 
+              countryCode={selectedCountry} 
+              onClose={() => setSelectedCountry(null)}
+            />
+          </div>
         </div>
       )}
     </div>

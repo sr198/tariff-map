@@ -17,26 +17,32 @@ const StorySlideshow: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4">
-      <div className="overflow-x-auto">
-        <div className="flex gap-6 pb-4">
-          {strips.map((strip) => (
-            <div key={strip.id} className="relative flex-none first:ml-0">
-              <div className="relative">
-                <img
-                  src={strip.src}
-                  alt={strip.alt}
-                  className="
-                    rounded-lg
-                    shadow-lg
-                    object-contain
-                    h-[400px]
-                    w-auto
-                  "
-                />
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">Wait, how does tariff work again?</h2>
+      </div>
+      <div className="bg-gray-50 rounded-lg p-4">
+        <div className="overflow-x-auto">
+          <div className="flex gap-6 pb-4">
+            {strips.map((strip) => (
+              <div key={strip.id} className="relative flex-none first:ml-0">
+                <div className="relative">
+                  <img
+                    src={strip.src}
+                    alt={strip.alt}
+                    className="
+                      rounded-lg
+                      shadow-sm
+                      object-contain
+                      h-[400px]
+                      w-auto
+                      border border-gray-200
+                    "
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

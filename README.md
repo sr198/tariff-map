@@ -14,6 +14,7 @@ An interactive visualization of US trade relationships and tariffs with countrie
 - Detailed trade statistics for each country
 - Responsive design for all screen sizes
 - Color-coded visualization of tariff rates
+- Mobile-friendly country selection dropdown
 
 ## Getting Started
 
@@ -35,12 +36,22 @@ cd tariff-map
 npm install
 ```
 
-3. Start the development server:
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Update the `NEXT_PUBLIC_API_URL` to point to your API server
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## Environment Variables
+
+The application uses the following environment variables:
+
+- `NEXT_PUBLIC_API_URL`: The URL of the API server (default: http://localhost:8000)
 
 ## Development
 

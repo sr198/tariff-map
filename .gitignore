@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,48 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+.Python
+backend/env/
+backend/venv/
+backend/ENV/
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Jupyter Notebook
+.ipynb_checkpoints
+backend/notebooks/.ipynb_checkpoints/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs
+*.log
+logs/
+backend/logs/
+
+# Cache
+.cache/
+.pytest_cache/
+backend/.pytest_cache/
+
+# Test data
+test.csv
+
+
+# Cursor 
+.cursorrules

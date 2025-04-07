@@ -3,48 +3,52 @@ import React from 'react';
 interface TooltipProps {
   countryName: string;
   data: {
-    usImportTariff: number;
-    countryExportTariff: number;
-    tradeBalance: number;
-    partnerStatus: string;
+    trump_claimed_tariff?: number;
+    us_reciprocal_tariff?: number;
+    tradeBalance?: number;
+    partnerStatus?: string;
   };
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ countryName, data: countryData }) => {
   if (!countryData) return null;
 
-  const formattedValues = {
-    usImportTariff: countryData?.usImportTariff ? countryData.usImportTariff.toFixed(1) : 'N/A',
-    countryExportTariff: countryData?.countryExportTariff ? countryData.countryExportTariff.toFixed(1) : 'N/A',
-    tradeBalance: countryData?.tradeBalance ? countryData.tradeBalance.toFixed(1) : 'N/A',
-    partnerStatus: countryData?.partnerStatus || 'Unknown'
-  };
-
   return (
     <div
-      className="absolute z-50 bg-white shadow-lg rounded-lg p-3 max-w-xs transform -translate-x-1/2 -translate-y-full"
+      className="absolute z-50 bg-white shadow-lg rounded-lg p-2 max-w-[200px] transform -translate-x-1/2 -translate-y-full border border-gray-200"
     >
-      <div className="font-semibold text-gray-900 mb-2">{countryName}</div>
+      <div className="font-semibold text-gray-900 text-sm mb-1">{countryName}</div>
       
-      <div className="space-y-1 text-sm">
-        <div className="flex justify-between">
-          <span className="text-gray-500">US Import Tariff:</span>
-          <span className="font-medium">{formattedValues.usImportTariff}%</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Export Tariff:</span>
-          <span className="font-medium">{formattedValues.countryExportTariff}%</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Trade Balance:</span>
-          <span className={`font-medium ${countryData?.tradeBalance && countryData.tradeBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            ${formattedValues.tradeBalance}B
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Status:</span>
-          <span className="font-medium">{formattedValues.partnerStatus}</span>
-        </div>
+      <div className="space-y-0.5 text-xs">
+        {countryData.trump_claimed_tariff !== undefined && (
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-500">Tariff on US Import:</span>
+            <span className="font-medium whitespace-nowrap">{countryData.trump_claimed_tariff.toFixed(1)}%</span>
+          </div>
+        )}
+        
+        {countryData.us_reciprocal_tariff !== undefined && (
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-500">Reciprocal Tariff:</span>
+            <span className="font-medium whitespace-nowrap">{countryData.us_reciprocal_tariff.toFixed(1)}%</span>
+          </div>
+        )}
+        
+        {countryData.tradeBalance !== undefined && (
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-500">Trade Balance:</span>
+            <span className={`font-medium whitespace-nowrap ${countryData.tradeBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ${countryData.tradeBalance.toFixed(1)}B
+            </span>
+          </div>
+        )}
+        
+        {countryData.partnerStatus && (
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-500">Status:</span>
+            <span className="font-medium whitespace-nowrap">{countryData.partnerStatus}</span>
+          </div>
+        )}
       </div>
     </div>
   );

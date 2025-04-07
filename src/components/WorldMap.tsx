@@ -360,6 +360,7 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
                         onMouseLeave={handleMouseLeave}
                         onTouchStart={(e) => handleTouchStart(countryName, e as any)}
                         onTouchEnd={handleTouchEnd}
+                        onClick={() => handleCountryClick(countryName)}
                         style={{
                           default: {
                             fill: countryName === 'United States of America' 

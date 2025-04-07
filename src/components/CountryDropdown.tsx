@@ -37,7 +37,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, clas
 
   if (isLoading) {
     return (
-      <div className={`w-full p-2 bg-gray-100 rounded-lg ${className}`}>
+      <div className={`w-full bg-gray-100 rounded-lg ${className}`}>
         <select disabled className="w-full p-2 bg-transparent">
           <option>Loading countries...</option>
         </select>
@@ -47,7 +47,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, clas
 
   if (error) {
     return (
-      <div className={`w-full p-2 bg-red-50 text-red-600 rounded-lg ${className}`}>
+      <div className={`w-full bg-red-50 text-red-600 rounded-lg ${className}`}>
         Error loading countries: {error}
       </div>
     );

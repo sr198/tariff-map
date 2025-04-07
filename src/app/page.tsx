@@ -206,65 +206,62 @@ export default function Home() {
 
       <ErrorBoundary>
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="w-full overflow-hidden">
-            <div className="flex flex-col space-y-6">
-              <div className="mb-6">
-                <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
-                  <TabsList>
-                    <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
-                    <TabsTrigger value="deficit">Trade Deficit Map</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-
-              {/* Country Selection Dropdown - Only visible on mobile */}
-              <div className="mb-6 md:hidden">
-                <CountryDropdown 
-                  onCountrySelect={(countryCode) => {
-                    const countryName = countryCodeToName[countryCode];
-                    if (countryName) {
-                      handleCountrySelect(countryName);
-                    }
-                  }} 
-                  className="max-w-md mx-auto" 
-                />
-              </div>
-
-              <div className="mb-6 w-full">
-                {activeMap === 'tariff' ? (
-                  <WorldMapComponent
-                    data={countryData}
-                    onCountryClick={handleCountrySelect}
-                    onCountryHover={handleCountryHover}
-                  />
-                ) : (
-                  <TradeDeficitMapComponent
-                    countryNameToCode={countryNameToCode}
-                    countryCodeToName={countryCodeToName}
-                    countryMappings={countryMappings}
-                    onCountrySelect={handleCountrySelect}
-                  />
-                )}
-              </div>
-
-              {/* Details Section */}
-              <section className="bg-white rounded-lg shadow-sm p-6">
-                {selectedCountry ? (
-                  <CountryDetails
-                    countryName={selectedCountry}
-                    countryCode={getCountryCode(selectedCountry)}
-                    onBack={() => setSelectedCountry(null)}
-                  />
-                ) : (
-                  <GlobalStats />
-                )}
-              </section>
-
-              {/* New Tariff Explainer Section */}
-              <section className="bg-white rounded-lg shadow-sm p-6">
-                <StorySlideshow />
-              </section>
+          <div className="flex flex-col space-y-6">
+            <div className="mb-6">
+              <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
+                <TabsList>
+                  <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
+                  <TabsTrigger value="deficit">Trade Deficit Map</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
+
+            {/* Country Selection Dropdown - Only visible on mobile */}
+            <div className="mb-6 md:hidden">
+              <CountryDropdown 
+                onCountrySelect={(countryCode) => {
+                  const countryName = countryCodeToName[countryCode];
+                  if (countryName) {
+                    handleCountrySelect(countryName);
+                  }
+                }}
+              />
+            </div>
+
+            <div className="mb-6">
+              {activeMap === 'tariff' ? (
+                <WorldMapComponent
+                  data={countryData}
+                  onCountryClick={handleCountrySelect}
+                  onCountryHover={handleCountryHover}
+                />
+              ) : (
+                <TradeDeficitMapComponent
+                  countryNameToCode={countryNameToCode}
+                  countryCodeToName={countryCodeToName}
+                  countryMappings={countryMappings}
+                  onCountrySelect={handleCountrySelect}
+                />
+              )}
+            </div>
+
+            {/* Details Section */}
+            <section className="bg-white rounded-lg shadow-sm p-6">
+              {selectedCountry ? (
+                <CountryDetails
+                  countryName={selectedCountry}
+                  countryCode={getCountryCode(selectedCountry)}
+                  onBack={() => setSelectedCountry(null)}
+                />
+              ) : (
+                <GlobalStats />
+              )}
+            </section>
+
+            {/* New Tariff Explainer Section */}
+            <section className="bg-white rounded-lg shadow-sm p-6">
+              <StorySlideshow />
+            </section>
           </div>
         </main>
       </ErrorBoundary>

@@ -80,13 +80,15 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       scaleFactor = 1000000000;
     }
     
-    // Format the data with the appropriate scale
-    const formattedData = tradeData.map(d => ({
-      year: d.year,
-      export: d.export / scaleFactor,
-      import_: d.import_ / scaleFactor,
-      trade_deficit: d.trade_deficit / scaleFactor
-    }));
+    // Format the data with the appropriate scale and sort in reverse chronological order
+    const formattedData = tradeData
+      .map(d => ({
+        year: d.year,
+        export: d.export / scaleFactor,
+        import_: d.import_ / scaleFactor,
+        trade_deficit: d.trade_deficit / scaleFactor
+      }))
+      .sort((a, b) => b.year - a.year); // Sort in descending order by year
     
     return { unit, scaleFactor, formattedData };
   }, [tradeData]);
@@ -246,8 +248,8 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-4">
+    <div className="w-full">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-4 md:space-y-0">
         <h2 className="text-xl font-bold text-gray-800">
           {isGlobal ? 'US Trade with World' : `US Trade with ${countryName}`}
         </h2>
@@ -282,10 +284,10 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       {tradeData.length === 0 ? (
         <div className="text-gray-500 p-4 text-center">No trade data available.</div>
       ) : (
-        <>
+        <div className="space-y-6">
           {/* Summary Cards */}
           {summaryStats && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                 <h3 className="text-sm font-medium text-green-800">US Exports {isGlobal ? 'to World' : `to ${countryName}`}</h3>
                 <p className="text-2xl font-bold text-green-700">{summaryStats.export.toFixed(2)} {unit}</p>
@@ -319,36 +321,40 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
           )}
 
           {/* Chart */}
-          <div className="h-80">
-            <Line data={chartData} options={chartOptions} />
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="h-80">
+              <Line data={chartData} options={chartOptions} />
+            </div>
           </div>
           
           {/* Data Table */}
-          <div className="mt-6 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US Exports ({unit})</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US Imports ({unit})</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trade Balance ({unit})</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {formattedData.map((item) => (
-                  <tr key={item.year}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.year}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{item.export.toFixed(2)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600">{item.import_.toFixed(2)}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${-item.trade_deficit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {-item.trade_deficit >= 0 ? '+' : ''}{(-item.trade_deficit).toFixed(2)}
-                    </td>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="overflow-x-auto relative max-w-[calc(100vw-4rem)]">
+              <table className="w-full table-auto divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                    <th className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exports ({unit})</th>
+                    <th className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imports ({unit})</th>
+                    <th className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance ({unit})</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {formattedData.map((item) => (
+                    <tr key={item.year}>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.year}</td>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-green-600">{item.export.toFixed(2)}</td>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-purple-600">{item.import_.toFixed(2)}</td>
+                      <td className={`px-2 sm:px-4 py-2 whitespace-nowrap text-sm ${-item.trade_deficit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {-item.trade_deficit >= 0 ? '+' : ''}{(-item.trade_deficit).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -217,8 +217,8 @@ export default function Home() {
                 </Tabs>
               </div>
 
-              {/* Country Selection Dropdown - Independent of map type */}
-              <div className="mb-6">
+              {/* Country Selection Dropdown - Only visible on mobile */}
+              <div className="mb-6 md:hidden">
                 <CountryDropdown 
                   onCountrySelect={(countryCode) => {
                     const countryName = countryCodeToName[countryCode];

@@ -188,13 +188,13 @@ export default function Home() {
       {/* Header */}
       <header className="bg-[#0A1A2F] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-24">
             {/* Logo and Title */}
             <div className="flex items-center space-x-3">
               <img
                 src="/logo/logo.svg"
                 alt="Tariff Map Logo"
-                className="h-8 w-8"
+                className="h-12 w-12"
               />
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-white truncate">US Trade & Tariff Map</h1>
@@ -263,14 +263,14 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-[#0A1A2F] text-gray-300 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center space-x-2 mb-2">
                 <img
                   src="/logo/logo.svg"
                   alt="Tariff Map Logo"
-                  className="h-6 w-6"
+                  className="h-8 w-8"
                 />
                 <span className="text-lg font-bold text-white">
                   TariffMap<span className="text-blue-300">.live</span>

@@ -138,22 +138,22 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       {
         label: `Exports (${unit})`,
         data: formattedData.map(d => d.export),
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.5)',
+        borderColor: 'rgb(17, 24, 39)',
+        backgroundColor: 'rgba(17, 24, 39, 0.1)',
         tension: 0.1,
       },
       {
         label: `Imports (${unit})`,
         data: formattedData.map(d => d.import_),
-        borderColor: 'rgb(147, 51, 234)',
-        backgroundColor: 'rgba(147, 51, 234, 0.5)',
+        borderColor: 'rgb(75, 85, 99)',
+        backgroundColor: 'rgba(75, 85, 99, 0.1)',
         tension: 0.1,
       },
       {
         label: `Trade Balance (${unit})`,
         data: formattedData.map(d => -d.trade_deficit),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: 'rgb(107, 114, 128)',
+        backgroundColor: 'rgba(107, 114, 128, 0.1)',
         tension: 0.1,
       },
     ],
@@ -259,7 +259,7 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
           <button
             onClick={() => setTimeRange('5Y')}
             className={`px-3 py-1 rounded ${
-              timeRange === '5Y' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              timeRange === '5Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
             }`}
           >
             5Y
@@ -267,7 +267,7 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
           <button
             onClick={() => setTimeRange('10Y')}
             className={`px-3 py-1 rounded ${
-              timeRange === '10Y' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              timeRange === '10Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
             }`}
           >
             10Y
@@ -275,7 +275,7 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
           <button
             onClick={() => setTimeRange('ALL')}
             className={`px-3 py-1 rounded ${
-              timeRange === 'ALL' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              timeRange === 'ALL' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
             }`}
           >
             ALL
@@ -290,29 +290,23 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
           {/* Summary Cards */}
           {summaryStats && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h3 className="text-sm font-medium text-green-800">US Exports {isGlobal ? 'to World' : `to ${countryName}`}</h3>
-                <p className="text-2xl font-bold text-green-700">{summaryStats.export.toFixed(2)} {unit}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-800">US Exports {isGlobal ? 'to World' : `to ${countryName}`}</h3>
+                <p className="text-2xl font-bold text-gray-900">{summaryStats.export.toFixed(2)} {unit}</p>
                 <p className="text-sm text-gray-600">
                   {summaryStats.exportChange >= 0 ? '↑' : '↓'} {Math.abs(summaryStats.exportChange).toFixed(1)}% YoY
                 </p>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <h3 className="text-sm font-medium text-purple-800">US Imports {isGlobal ? 'from World' : `from ${countryName}`}</h3>
-                <p className="text-2xl font-bold text-purple-700">{summaryStats.import.toFixed(2)} {unit}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-800">US Imports {isGlobal ? 'from World' : `from ${countryName}`}</h3>
+                <p className="text-2xl font-bold text-gray-900">{summaryStats.import.toFixed(2)} {unit}</p>
                 <p className="text-sm text-gray-600">
                   {summaryStats.importChange >= 0 ? '↑' : '↓'} {Math.abs(summaryStats.importChange).toFixed(1)}% YoY
                 </p>
               </div>
-              <div className={`${
-                summaryStats.deficit >= 0 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-red-50 border-red-200'
-                } p-4 rounded-lg border`}>
-                <h3 className={`text-sm font-medium ${
-                  summaryStats.deficit >= 0 ? 'text-green-800' : 'text-red-800'
-                }`}>US Trade Balance {isGlobal ? 'with World' : `with ${countryName}`}</h3>
-                <p className={`text-2xl font-bold ${summaryStats.deficit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-800">US Trade Balance {isGlobal ? 'with World' : `with ${countryName}`}</h3>
+                <p className="text-2xl font-bold text-gray-900">
                   {summaryStats.deficit >= 0 ? '+' : ''}{summaryStats.deficit.toFixed(2)} {unit}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -345,9 +339,9 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
                   {formattedData.map((item) => (
                     <tr key={item.year}>
                       <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.year}</td>
-                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-green-600">{item.export.toFixed(2)}</td>
-                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-purple-600">{item.import_.toFixed(2)}</td>
-                      <td className={`px-2 sm:px-4 py-2 whitespace-nowrap text-sm ${-item.trade_deficit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.export.toFixed(2)}</td>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-gray-900">{item.import_.toFixed(2)}</td>
+                      <td className="px-2 sm:px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         {-item.trade_deficit >= 0 ? '+' : ''}{(-item.trade_deficit).toFixed(2)}
                       </td>
                     </tr>

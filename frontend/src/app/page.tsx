@@ -211,8 +211,8 @@ export default function Home() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
               <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
                 <TabsList>
-                  <TabsTrigger value="deficit">Trade Deficit Map</TabsTrigger>
-                  <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
+                  <TabsTrigger value="deficit">US Trade Deficit Map</TabsTrigger>
+                  <TabsTrigger value="tariff">US Tariff Map</TabsTrigger>
                 </TabsList>
               </Tabs>
               

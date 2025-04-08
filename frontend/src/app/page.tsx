@@ -14,7 +14,7 @@ import { fetchCountries, fetchCountryMappings } from '@/services/tradeService';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CountryDropdown from '@/components/CountryDropdown';
 import AdComponent from '@/components/AdComponent';
-import ComingSoon from '@/components/ComingSoon';
+import UnderConstruction from '@/components/UnderConstruction';
 
 // Dynamically import the map components to avoid SSR issues
 const WorldMapComponent = dynamic(() => import('@/components/WorldMap'), {
@@ -37,12 +37,12 @@ const TradeDeficitMapComponent = dynamic(() => import('@/components/TradeDeficit
 
 // Main component
 export default function Home() {
-  // Check if we should show the coming soon page
-  const showComingSoon = process.env.NEXT_PUBLIC_DISABLE_COMING_SOON !== 'true';
+  // Check if we should show the under construction page
+  const showUnderConstruction = process.env.NEXT_PUBLIC_DISABLE_COMING_SOON !== 'true';
   
-  // If coming soon is enabled, show the coming soon page
-  if (showComingSoon) {
-    return <ComingSoon />;
+  // If under construction is enabled, show the under construction page
+  if (showUnderConstruction) {
+    return <UnderConstruction />;
   }
   
   const [activeSection, setActiveSection] = useState('map');

@@ -270,32 +270,6 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
         <h2 className="text-xl font-bold text-gray-800">
           {isGlobal ? 'US Trade with World' : `US Trade with ${countryName}`}
         </h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setTimeRange('5Y')}
-            className={`px-3 py-1 rounded ${
-              timeRange === '5Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            5Y
-          </button>
-          <button
-            onClick={() => setTimeRange('10Y')}
-            className={`px-3 py-1 rounded ${
-              timeRange === '10Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            10Y
-          </button>
-          <button
-            onClick={() => setTimeRange('ALL')}
-            className={`px-3 py-1 rounded ${
-              timeRange === 'ALL' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            ALL
-          </button>
-        </div>
       </div>
 
       {tradeData.length === 0 ? (
@@ -330,6 +304,34 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
               </div>
             </div>
           )}
+
+          {/* Time Range Filters */}
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={() => setTimeRange('5Y')}
+              className={`px-3 py-1 rounded ${
+                timeRange === '5Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              5Y
+            </button>
+            <button
+              onClick={() => setTimeRange('10Y')}
+              className={`px-3 py-1 rounded ${
+                timeRange === '10Y' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              10Y
+            </button>
+            <button
+              onClick={() => setTimeRange('ALL')}
+              className={`px-3 py-1 rounded ${
+                timeRange === 'ALL' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              ALL
+            </button>
+          </div>
 
           {/* Chart */}
           <div className="bg-gray-50 rounded-lg p-4">

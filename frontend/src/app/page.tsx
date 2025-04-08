@@ -13,6 +13,7 @@ import StorySlideshow from '@/components/StorySlideshow';
 import { fetchCountries, fetchCountryMappings } from '@/services/tradeService';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CountryDropdown from '@/components/CountryDropdown';
+import AdComponent from '@/components/AdComponent';
 
 // Dynamically import the map components to avoid SSR issues
 const WorldMapComponent = dynamic(() => import('@/components/WorldMap'), {
@@ -208,6 +209,15 @@ export default function Home() {
       <ErrorBoundary>
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <div className="flex flex-col space-y-6 w-full">
+            {/* Top Ad - Horizontal Banner */}
+            <div className="w-full flex justify-center my-4">
+              <AdComponent 
+                adSlot="top-banner" 
+                adFormat="horizontal" 
+                className="w-full max-w-[728px] h-[90px]"
+              />
+            </div>
+            
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
               <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
                 <TabsList>
@@ -250,13 +260,17 @@ export default function Home() {
               />
             </div>
 
+            {/* Middle Ad - Rectangle */}
+            {/* <div className="w-full flex justify-center my-4">
+              <AdComponent 
+                adSlot="middle-rectangle" 
+                adFormat="rectangle" 
+                className="w-[300px] h-[250px]"
+              />
+            </div> */}
+
             {/* Details Section */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-lg font-semibold tracking-tight text-gray-900 font-display">
-                  {selectedCountry ? `${selectedCountry} Trade Details` : 'Global Trade Overview'}
-                </h2>
-              </div>
               <div className="p-6">
                 {selectedCountry ? (
                   <CountryDetails
@@ -269,6 +283,15 @@ export default function Home() {
                 )}
               </div>
             </section>
+            
+            {/* Bottom Ad - Horizontal Banner */}
+            <div className="w-full flex justify-center my-4">
+              <AdComponent 
+                adSlot="bottom-banner" 
+                adFormat="horizontal" 
+                className="w-full max-w-[728px] h-[90px]"
+              />
+            </div>
           </div>
         </main>
       </ErrorBoundary>
@@ -298,25 +321,38 @@ export default function Home() {
                 <li>
                   <a 
                     href="https://wits.worldbank.org/" 
-                    target="_blank" 
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-900 transition-colors"
+                    className="text-gray-500 hover:text-gray-700"
                   >
-                    World Bank - World Integrated Trade Solution
+                    World Bank WITS
                   </a>
                 </li>
                 <li>
                   <a 
-                    href="https://www.whitehouse.gov/" 
-                    target="_blank" 
+                    href="https://data.worldbank.org/" 
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-900 transition-colors"
+                    className="text-gray-500 hover:text-gray-700"
                   >
-                    The White House
+                    World Bank Data
                   </a>
                 </li>
               </ul>
             </div>
+          </div>
+          
+          {/* Footer Ad - Horizontal Banner */}
+          <div className="w-full flex justify-center mt-8">
+            <AdComponent 
+              adSlot="footer-banner" 
+              adFormat="horizontal" 
+              className="w-full max-w-[728px] h-[90px]"
+            />
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-100 text-center text-sm text-gray-500">
+            <p>© {new Date().getFullYear()} TariffMap.live. All rights reserved.</p>
           </div>
         </div>
       </footer>

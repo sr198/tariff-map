@@ -94,9 +94,7 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
     const loadTariffData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching tariff map data...');
         const response = await fetchTariffMap();
-        console.log('Tariff map response:', response);
         
         // Convert array to object for easier lookup
         // Use country_name as the key instead of country_code
@@ -111,18 +109,12 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
         // Special handling for EU countries
         if (tariffMap['European Union'] !== undefined) {
           const euTariff = tariffMap['European Union'];
-          console.log(`Found EU tariff rate: ${euTariff}`);
           
           // Add the EU tariff rate to all EU countries
           EU_COUNTRIES.forEach(country => {
             tariffMap[country] = euTariff;
           });
-          
-          console.log('Added EU tariff rate to all EU countries');
         }
-        
-        console.log('Processed tariff map:', tariffMap);
-        console.log('Country names in tariff data:', Object.keys(tariffMap));
         
         setTariffData(tariffMap);
         setError(null);
@@ -172,37 +164,25 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
 
   // Handle country click on map
   const handleCountryClick = useCallback((countryName: string) => {
-    console.log('Country clicked:', countryName);
-    console.log('Available data:', tariffData);
-    
-    if (countryName !== 'United States of America') {
-      // Check if the country exists in our data
-      if (tariffData[countryName] !== undefined) {
-        console.log('Country found in data:', countryName, tariffData[countryName]);
+    // Check if the country exists in our data
+    if (tariffData[countryName] !== undefined) {
+      onCountryClick(countryName, countryName);
+    } else {
+      // Check if it's an EU country
+      if (EU_COUNTRIES.includes(countryName) && tariffData['European Union'] !== undefined) {
         onCountryClick(countryName, countryName);
-      } else {
-        console.log('Country not found in data:', countryName);
-        
-        // Check if it's an EU country
-        if (EU_COUNTRIES.includes(countryName) && tariffData['European Union'] !== undefined) {
-          console.log('EU country found, using EU tariff rate:', tariffData['European Union']);
-          onCountryClick(countryName, countryName);
-          return;
-        }
-        
-        // Try to find a close match
-        const countryEntries = Object.entries(tariffData);
-        const closeMatch = countryEntries.find(([name, _]) => 
-          name.toLowerCase().includes(countryName.toLowerCase()) || 
-          countryName.toLowerCase().includes(name.toLowerCase())
-        );
-        
-        if (closeMatch) {
-          console.log('Found close match:', closeMatch[0]);
-          onCountryClick(closeMatch[0], closeMatch[0]);
-        } else {
-          console.log('No matching country entry found in data');
-        }
+        return;
+      }
+      
+      // Try to find a close match
+      const countryEntries = Object.entries(tariffData);
+      const closeMatch = countryEntries.find(([name, _]) => 
+        name.toLowerCase().includes(countryName.toLowerCase()) || 
+        countryName.toLowerCase().includes(name.toLowerCase())
+      );
+      
+      if (closeMatch) {
+        onCountryClick(closeMatch[0], closeMatch[0]);
       }
     }
   }, [tariffData, onCountryClick]);

@@ -97,8 +97,6 @@ export default function Home() {
 
   // Memoize the country selection handler
   const handleCountrySelect = useCallback((countryNameOrCode: string, countryName?: string) => {
-    console.log('Country selected:', countryNameOrCode, countryName);
-    
     // If countryName is provided, it means we're getting a country code and name from TradeDeficitMap
     // Otherwise, we're getting just a country name from WorldMap
     if (countryName) {
@@ -138,7 +136,8 @@ export default function Home() {
   }, []);
 
   const handleCountryHover = (countryName: string | null) => {
-    console.log('Country hover:', countryName);
+    // This function is intentionally left empty as it's just a placeholder
+    // for future hover functionality
   };
 
   // Get the country code for the selected country

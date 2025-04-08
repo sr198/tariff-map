@@ -325,7 +325,7 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
                 fill: countryName === 'United States of America' 
                   ? US_STYLES.fill 
                   : countryData 
-                    ? colorScale(countryData.trump_claimed_tariff)
+                    ? colorScale(countryData.us_reciprocal_tariff)
                     : '#F1F5F9',
                 stroke: US_STYLES.stroke,
                 strokeWidth: US_STYLES.strokeWidth,
@@ -335,7 +335,7 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
                 fill: countryName === 'United States of America'
                   ? US_STYLES.fill
                   : countryData
-                    ? colorScale(countryData.trump_claimed_tariff)
+                    ? colorScale(countryData.us_reciprocal_tariff)
                     : '#E2E8F0',
                 stroke: '#000',
                 strokeWidth: 1,
@@ -345,7 +345,7 @@ const WorldMap: React.FC<WorldMapProps> = memo(({ data, onCountryClick, onCountr
                 fill: countryName === 'United States of America'
                   ? US_STYLES.fill
                   : countryData
-                    ? colorScale(countryData.trump_claimed_tariff)
+                    ? colorScale(countryData.us_reciprocal_tariff)
                     : '#CBD5E1',
                 stroke: '#000',
                 strokeWidth: 1,

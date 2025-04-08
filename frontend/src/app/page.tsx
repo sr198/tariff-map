@@ -184,7 +184,7 @@ export default function Home() {
   }, [cleanup]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
       {/* Header */}
       <header className="bg-[#0A1A2F] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -205,8 +205,8 @@ export default function Home() {
       </header>
 
       <ErrorBoundary>
-        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col space-y-6">
+        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+          <div className="flex flex-col space-y-6 w-full">
             <div className="mb-6">
               <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
                 <TabsList>
@@ -256,11 +256,6 @@ export default function Home() {
               ) : (
                 <GlobalStats />
               )}
-            </section>
-
-            {/* New Tariff Explainer Section */}
-            <section className="bg-white rounded-lg shadow-sm p-6">
-              <StorySlideshow />
             </section>
           </div>
         </main>

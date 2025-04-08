@@ -42,7 +42,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
 
       {/* Add the CountryTradeStats component */}
       {countryCode && countryName ? (
-        <div>
+        <div className="w-full">
           <CountryTradeStats countryCode={countryCode} countryName={countryName} />
         </div>
       ) : (

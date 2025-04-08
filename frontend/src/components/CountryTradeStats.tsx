@@ -152,8 +152,8 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       {
         label: `Trade Balance (${unit})`,
         data: formattedData.map(d => -d.trade_deficit),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: formattedData.map(d => d.trade_deficit >= 0 ? 'rgb(239, 68, 68)' : 'rgb(34, 197, 94)'),
+        backgroundColor: formattedData.map(d => d.trade_deficit >= 0 ? 'rgba(239, 68, 68, 0.5)' : 'rgba(34, 197, 94, 0.5)'),
         tension: 0.1,
       },
     ],
@@ -200,8 +200,10 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
   const summaryStats = useMemo(() => {
     if (!tradeData.length) return null;
     
-    const latestYear = formattedData[formattedData.length - 1];
-    const previousYear = formattedData[formattedData.length - 2];
+    // Since formattedData is sorted in descending order (newest first),
+    // the latest year is at index 0 and the previous year is at index 1
+    const latestYear = formattedData[0];
+    const previousYear = formattedData[1];
     
     // Calculate year-over-year changes
     const exportChange = previousYear 

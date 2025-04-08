@@ -130,39 +130,6 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
     loadData();
   }, [year, reporterIso3]);
 
-  // Create color scale based on deficit values
-  const colorScale = useMemo(() => {
-    // Don't create scale if no data
-    if (Object.keys(deficitData).length === 0) {
-      return null;
-    }
-
-    // Convert to billions
-    const values = Object.values(deficitData).map(d => d.deficit_thousands / 1000000);
-    const deficitValues = values.filter(v => v < 0).map(v => Math.abs(v)); // Negative values are deficits
-
-    // Find the maximum deficit value
-    const maxDeficit = Math.max(...deficitValues, 1); // Use 1 as minimum to avoid log(0)
-
-    // Create scale for deficits only
-    const deficitScale = scaleLog<string>()
-      .domain([1, maxDeficit])
-      .range(['#ffffff', '#7f1d1d']) // White to darker red (red-800)
-      .clamp(true);
-
-    // Debug: Log the scale range
-    console.log('Scale range:', {
-      maxDeficit,
-      sampleValues: values.slice(0, 5)
-    });
-
-    // Return a function that handles the values
-    return (value: number): string => {
-      if (value >= 0) return '#f1f5f9'; // Light gray for surpluses or zero
-      return deficitScale(Math.abs(value)); // Dark red scale for deficits (negative values)
-    };
-  }, [deficitData]);
-
   // Handle mouse enter for tooltip
   const handleMouseEnter = useCallback((countryName: string, event: React.MouseEvent) => {
     const countryCode = countryNameToCode[countryName];
@@ -195,6 +162,82 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
       }
     }
   }, [countryNameToCode, onCountrySelect]);
+
+  // Create color scale based on deficit values
+  const colorScale = useMemo(() => {
+    // Don't create scale if no data
+    if (Object.keys(deficitData).length === 0) {
+      return null;
+    }
+
+    // Convert to billions
+    const values = Object.values(deficitData).map(d => d.deficit_thousands / 1000000);
+    const deficitValues = values.filter(v => v < 0).map(v => Math.abs(v)); // Negative values are deficits
+
+    // Find the maximum deficit value
+    const maxDeficit = Math.max(...deficitValues, 1); // Use 1 as minimum to avoid log(0)
+
+    // Create scale for deficits only
+    return scaleLog<string>()
+      .domain([1, maxDeficit])
+      .range(['#ffffff', '#7f1d1d']) // White to darker red (red-800)
+      .clamp(true);
+  }, [deficitData]);
+
+  // Memoize the getCountryColor function
+  const getCountryColor = useCallback((value: number): string => {
+    if (!colorScale) return '#f1f5f9';
+    if (value >= 0) return '#f1f5f9'; // Light gray for surpluses or zero
+    return colorScale(Math.abs(value)); // Dark red scale for deficits (negative values)
+  }, [colorScale]);
+
+  // Memoize the geographies rendering
+  const renderGeographies = useCallback(({ geographies }: { geographies: any[] }) => {
+    return geographies
+      .filter(geo => geo.properties.name !== 'Antarctica')
+      .map(geo => {
+        const countryName = geo.properties.name;
+        const countryCode = countryNameToCode[countryName];
+        const deficit = countryCode ? deficitData[countryCode] : null;
+        const value = deficit ? deficit.deficit_thousands / 1000000 : 0;
+        
+        return (
+          <Geography
+            key={geo.rsmKey}
+            geography={geo}
+            onMouseEnter={(e) => handleMouseEnter(countryName, e as any)}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => handleCountryClick(countryName)}
+            style={{
+              default: {
+                fill: countryName === 'United States of America' 
+                  ? US_STYLES.fill 
+                  : getCountryColor(value),
+                stroke: US_STYLES.stroke,
+                strokeWidth: US_STYLES.strokeWidth,
+                outline: 'none',
+              },
+              hover: {
+                fill: countryName === 'United States of America'
+                  ? US_STYLES.fill
+                  : getCountryColor(value),
+                stroke: '#000',
+                strokeWidth: 1,
+                outline: 'none',
+              },
+              pressed: {
+                fill: countryName === 'United States of America'
+                  ? US_STYLES.fill
+                  : getCountryColor(value),
+                stroke: '#000',
+                strokeWidth: 1,
+                outline: 'none',
+              },
+            }}
+          />
+        );
+      });
+  }, [countryNameToCode, deficitData, getCountryColor, handleMouseEnter, handleMouseLeave, handleCountryClick]);
 
   // Handle zoom controls
   const handleZoomIn = useCallback(() => {
@@ -231,76 +274,7 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
         >
           <ZoomableGroup zoom={zoom}>
             <Geographies geography={geoUrl}>
-              {({ geographies }) => {
-                // Debug: Log all country codes from the map data
-                console.log('Available country codes in map:', 
-                  geographies.map(geo => ({
-                    name: geo.properties.name,
-                    iso_a3: COUNTRY_TO_ISO3[geo.properties.name],
-                    hasData: !!(COUNTRY_TO_ISO3[geo.properties.name] && deficitData[COUNTRY_TO_ISO3[geo.properties.name]])
-                  }))
-                );
-
-                return geographies
-                  .filter(geo => geo.properties.name !== 'Antarctica')
-                  .map((geo) => {
-                    const countryName = geo.properties.name;
-                    const countryCode = countryNameToCode[countryName];
-                    const deficit = countryCode ? deficitData[countryCode] : null;
-                    const isUS = countryName === 'United States of America';
-                    const isSelected = countryCode === selectedCountry;
-                    
-                    // Convert thousands to billions for display
-                    const deficitValue = deficit ? deficit.deficit_thousands / 1000000 : 0;
-                    
-                    // Get the color based on the deficit value
-                    const color = isUS 
-                      ? US_STYLES.fill 
-                      : deficit && colorScale
-                        ? colorScale(deficitValue)
-                        : '#F1F5F9';
-                    
-                    // Debug: Log country data for all countries
-                    console.log('Country mapping:', {
-                      name: countryName,
-                      code: countryCode,
-                      hasDeficitData: !!deficit,
-                      deficitValue: deficit ? deficitValue : 'no data',
-                      color
-                    });
-                    
-                    return (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        onMouseEnter={(event) => handleMouseEnter(countryName, event)}
-                        onMouseLeave={handleMouseLeave}
-                        onClick={() => handleCountryClick(countryName)}
-                        style={{
-                          default: {
-                            fill: color,
-                            stroke: '#FFFFFF',
-                            strokeWidth: isUS ? US_STYLES.strokeWidth : 0.5,
-                            outline: 'none',
-                          },
-                          hover: {
-                            fill: color,
-                            stroke: '#FFFFFF',
-                            strokeWidth: isUS ? US_STYLES.strokeWidth : 0.75,
-                            outline: 'none',
-                            cursor: isUS ? 'default' : 'pointer',
-                          },
-                          pressed: {
-                            fill: color,
-                            stroke: isSelected ? '#000000' : '#FFFFFF',
-                            strokeWidth: isSelected ? 1.5 : (isUS ? US_STYLES.strokeWidth : 0.75),
-                            outline: 'none',
-                          },
-                        }}
-                      />
-                    );
-                  })
-              }}
+              {renderGeographies}
             </Geographies>
           </ZoomableGroup>
         </ComposableMap>

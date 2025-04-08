@@ -41,7 +41,7 @@ export default function Home() {
   const [countryCodeToName, setCountryCodeToName] = useState<Record<string, string>>({});
   const [countryMappings, setCountryMappings] = useState<Record<string, string>>({});
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
-  const [activeMap, setActiveMap] = useState<'tariff' | 'deficit'>('tariff');
+  const [activeMap, setActiveMap] = useState<'tariff' | 'deficit'>('deficit');
 
   // Use intersection observer for the details section
   const [detailsRef, isDetailsVisible] = useIntersectionObserver({
@@ -210,8 +210,8 @@ export default function Home() {
             <div className="mb-6">
               <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
                 <TabsList>
-                  <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
                   <TabsTrigger value="deficit">Trade Deficit Map</TabsTrigger>
+                  <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>

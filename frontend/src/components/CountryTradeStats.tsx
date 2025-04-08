@@ -152,8 +152,8 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       {
         label: `Trade Balance (${unit})`,
         data: formattedData.map(d => -d.trade_deficit),
-        borderColor: formattedData.map(d => d.trade_deficit >= 0 ? 'rgb(239, 68, 68)' : 'rgb(34, 197, 94)'),
-        backgroundColor: formattedData.map(d => d.trade_deficit >= 0 ? 'rgba(239, 68, 68, 0.5)' : 'rgba(34, 197, 94, 0.5)'),
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
         tension: 0.1,
       },
     ],

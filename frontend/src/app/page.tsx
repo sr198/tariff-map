@@ -185,18 +185,20 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
       {/* Header */}
-      <header className="bg-[#0A1A2F] shadow-md">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm bg-white/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-24">
+          <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
             <div className="flex items-center space-x-3">
               <img
                 src="/logo/logo.svg"
                 alt="Tariff Map Logo"
-                className="h-12 w-12"
+                className="h-8 w-8"
               />
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-white truncate">US Trade & Tariff Map</h1>
+                <h1 className="text-lg font-semibold tracking-tight text-gray-900 font-display">
+                  US Trade & Tariff Map
+                </h1>
               </div>
             </div>
           </div>
@@ -204,19 +206,40 @@ export default function Home() {
       </header>
 
       <ErrorBoundary>
-        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <div className="flex flex-col space-y-6 w-full">
-            <div className="mb-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
               <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
                 <TabsList>
                   <TabsTrigger value="deficit">Trade Deficit Map</TabsTrigger>
                   <TabsTrigger value="tariff">Tariff Map</TabsTrigger>
                 </TabsList>
               </Tabs>
+              
+              <div className="p-1">
+                {activeMap === 'tariff' ? (
+                  <div className="animate-slide-up">
+                    <WorldMapComponent
+                      data={countryData}
+                      onCountryClick={handleCountrySelect}
+                      onCountryHover={handleCountryHover}
+                    />
+                  </div>
+                ) : (
+                  <div className="animate-slide-up">
+                    <TradeDeficitMapComponent
+                      countryNameToCode={countryNameToCode}
+                      countryCodeToName={countryCodeToName}
+                      countryMappings={countryMappings}
+                      onCountrySelect={handleCountrySelect}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Country Selection Dropdown - Only visible on mobile */}
-            <div className="mb-6 md:hidden">
+            <div className="md:hidden">
               <CountryDropdown 
                 onCountrySelect={(countryCode) => {
                   const countryName = countryCodeToName[countryCode];
@@ -227,67 +250,57 @@ export default function Home() {
               />
             </div>
 
-            <div className="mb-6">
-              {activeMap === 'tariff' ? (
-                <WorldMapComponent
-                  data={countryData}
-                  onCountryClick={handleCountrySelect}
-                  onCountryHover={handleCountryHover}
-                />
-              ) : (
-                <TradeDeficitMapComponent
-                  countryNameToCode={countryNameToCode}
-                  countryCodeToName={countryCodeToName}
-                  countryMappings={countryMappings}
-                  onCountrySelect={handleCountrySelect}
-                />
-              )}
-            </div>
-
             {/* Details Section */}
-            <section className="bg-white rounded-lg shadow-sm p-6">
-              {selectedCountry ? (
-                <CountryDetails
-                  countryName={selectedCountry}
-                  countryCode={getCountryCode(selectedCountry)}
-                  onBack={() => setSelectedCountry(null)}
-                />
-              ) : (
-                <GlobalStats />
-              )}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
+              <div className="px-6 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-semibold tracking-tight text-gray-900 font-display">
+                  {selectedCountry ? `${selectedCountry} Trade Details` : 'Global Trade Overview'}
+                </h2>
+              </div>
+              <div className="p-6">
+                {selectedCountry ? (
+                  <CountryDetails
+                    countryName={selectedCountry}
+                    countryCode={getCountryCode(selectedCountry)}
+                    onBack={() => setSelectedCountry(null)}
+                  />
+                ) : (
+                  <GlobalStats />
+                )}
+              </div>
             </section>
           </div>
         </main>
       </ErrorBoundary>
 
       {/* Footer */}
-      <footer className="bg-[#0A1A2F] text-gray-300 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <footer className="bg-white border-t border-gray-100 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-2">
+              <div className="flex items-center space-x-2 mb-3">
                 <img
                   src="/logo/logo.svg"
                   alt="Tariff Map Logo"
-                  className="h-8 w-8"
+                  className="h-6 w-6"
                 />
-                <span className="text-lg font-bold text-white">
-                  TariffMap<span className="text-blue-300">.live</span>
+                <span className="text-base font-semibold tracking-tight text-gray-900 font-display">
+                  TariffMap<span className="text-gray-500">.live</span>
                 </span>
               </div>
-              <p className="text-sm">
+              <p className="text-sm text-gray-500">
                 Tracking global trade relationships and tariff impacts in real-time.
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Data Sources</h3>
-              <ul className="space-y-1 text-sm">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Data Sources</h3>
+              <ul className="space-y-2 text-sm">
                 <li>
                   <a 
                     href="https://wits.worldbank.org/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-300 hover:text-blue-400 transition-colors"
+                    className="text-gray-500 hover:text-gray-900 transition-colors"
                   >
                     World Bank - World Integrated Trade Solution
                   </a>
@@ -297,7 +310,7 @@ export default function Home() {
                     href="https://www.whitehouse.gov/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-300 hover:text-blue-400 transition-colors"
+                    className="text-gray-500 hover:text-gray-900 transition-colors"
                   >
                     The White House
                   </a>

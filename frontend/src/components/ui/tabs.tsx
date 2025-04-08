@@ -34,7 +34,7 @@ export const Tabs: React.FC<TabsProps> = ({ value, onValueChange, children }) =>
 
 export const TabsList: React.FC<TabsListProps> = ({ children }) => {
   return (
-    <div className="flex space-x-4 border-b border-gray-200">
+    <div className="flex space-x-1 p-1 bg-gray-100/50 rounded-t-lg border-b border-gray-100">
       {children}
     </div>
   );
@@ -50,10 +50,10 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children }) => 
   
   return (
     <button
-      className={`px-4 py-2 text-sm font-medium transition-colors ${
+      className={`px-4 py-2 text-sm font-medium tracking-tight rounded-md transition-all ${
         isActive
-          ? 'border-b-2 border-blue-500 text-blue-600'
-          : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
+          ? 'bg-white text-gray-900 shadow-sm'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
       }`}
       onClick={() => context.onValueChange(value)}
     >

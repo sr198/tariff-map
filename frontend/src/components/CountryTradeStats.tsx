@@ -138,21 +138,21 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
       {
         label: `Exports (${unit})`,
         data: formattedData.map(d => d.export),
-        borderColor: 'rgb(17, 24, 39)',
-        backgroundColor: 'rgba(17, 24, 39, 0.1)',
+        borderColor: 'rgb(59, 130, 246)', // Blue
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         tension: 0.1,
       },
       {
         label: `Imports (${unit})`,
         data: formattedData.map(d => d.import_),
-        borderColor: 'rgb(75, 85, 99)',
-        backgroundColor: 'rgba(75, 85, 99, 0.1)',
+        borderColor: 'rgb(16, 185, 129)', // Green
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
         tension: 0.1,
       },
       {
         label: `Trade Balance (${unit})`,
         data: formattedData.map(d => -d.trade_deficit),
-        borderColor: 'rgb(107, 114, 128)',
+        borderColor: 'rgb(107, 114, 128)', // Gray
         backgroundColor: 'rgba(107, 114, 128, 0.1)',
         tension: 0.1,
       },
@@ -164,13 +164,17 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        display: false,
       },
       title: {
         display: true,
         text: isGlobal 
           ? `US Trade with World (${timeRange})` 
           : `US Trade with ${countryName} (${timeRange})`,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
       },
       tooltip: {
         callbacks: {
@@ -190,10 +194,21 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
         beginAtZero: true,
         title: {
           display: true,
-          text: `Value (${unit})`
-        }
-      }
-    }
+          text: `Value (${unit})`,
+          font: {
+            weight: 'bold',
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+    },
   };
 
   // Calculate summary statistics

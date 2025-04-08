@@ -87,10 +87,10 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     labels: tradeData.map(d => d.year),
     datasets: [
       {
-        label: 'US Exports (Billions USD)',
-        data: tradeData.map(d => d.export),
-        borderColor: 'rgb(0, 0, 0)',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        label: 'Exports (Billions USD)',
+        data: tradeData.map(d => d.export / 1000000),
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         tension: 0.1,
       },
     ],
@@ -100,10 +100,10 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     labels: tradeData.map(d => d.year),
     datasets: [
       {
-        label: 'US Imports (Billions USD)',
-        data: tradeData.map(d => d.import_),
-        borderColor: 'rgb(75, 85, 99)',
-        backgroundColor: 'rgba(75, 85, 99, 0.1)',
+        label: 'Imports (Billions USD)',
+        data: tradeData.map(d => d.import_ / 1000000),
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
         tension: 0.1,
       },
     ],
@@ -114,7 +114,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     datasets: [
       {
         label: 'Trade Deficit (Billions USD)',
-        data: tradeData.map(d => d.trade_deficit),
+        data: tradeData.map(d => d.trade_deficit / 1000000),
         borderColor: 'rgb(107, 114, 128)',
         backgroundColor: 'rgba(107, 114, 128, 0.1)',
         tension: 0.1,
@@ -122,19 +122,46 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     ],
   };
 
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: 'US Global Trade Overview',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Billions USD',
+        },
+      },
+    },
+  };
+
   if (loading) return <div>Loading trade statistics...</div>;
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      <div className="bg-white p-4 rounded-lg shadow h-64">
-        <Line options={getChartOptions('US Exports')} data={exportData} />
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow h-64">
-        <Line options={getChartOptions('US Imports')} data={importData} />
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow h-64">
-        <Line options={getChartOptions('Trade Deficit')} data={deficitData} />
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">US Exports</h3>
+          <Line data={exportData} options={chartOptions} />
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">US Imports</h3>
+          <Line data={importData} options={chartOptions} />
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Trade Deficit</h3>
+          <Line data={deficitData} options={chartOptions} />
+        </div>
       </div>
     </div>
   );

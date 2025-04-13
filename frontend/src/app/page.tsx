@@ -103,25 +103,14 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              title="Support this project with a coffee"
             >
               <span className="hidden sm:inline">Buy me a coffee</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
+              <img
+                src="/coffee-cup.svg"
+                alt="Coffee cup"
                 className="h-5 w-5 transform group-hover:rotate-12 transition-transform duration-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 8h12v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8z" />
-                <path d="M6 8V5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v3" />
-                <path d="M9 16v-4" />
-                <path d="M15 16v-4" />
-                <path d="M12 16v-4" />
-                <path d="M6 12h12" />
-              </svg>
+              />
             </a>
           </div>
         </div>

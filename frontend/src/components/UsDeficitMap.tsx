@@ -7,7 +7,7 @@ import {
 } from 'react-simple-maps';
 import { scaleLog, scaleLinear } from 'd3-scale';
 import { useDeficitData } from '../hooks/useDeficitData';
-import Tooltip from './Tooltip';
+import MapTooltip from './MapTooltip';
 import { DeficitMapItem } from '../services/tradeService';
 
 // Use CDN URL for the geography data
@@ -43,11 +43,7 @@ interface UsDeficitMapProps {
 
 const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => {
   const [tooltipData, setTooltipData] = useState<{
-    countryName: string;
-    data: {
-      deficit: string;
-      country_name: string;
-    };
+    data: DeficitMapItem;
     x: number;
     y: number;
   } | null>(null);
@@ -135,13 +131,14 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
       const type = rawValue > 0 ? 'Surplus' : 'Deficit';
       
       setTooltipData({
-        countryName,
         data: {
-          deficit: `${type}: ${displayValue}`,
-          country_name: countryData.country_name
+          country_id: countryId,
+          country_code: countryId,
+          country_name: countryName,
+          deficit_thousands: rawValue
         },
         x: event.clientX,
-        y: event.clientY,
+        y: event.clientY
       });
     }
   }, [deficitMap]);
@@ -303,10 +300,11 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
           className="fixed z-50"
           style={tooltipStyles(tooltipData.x, tooltipData.y)}
         >
-          <Tooltip 
-            data={tooltipData.data} 
-            countryName={tooltipData.countryName}
-            mapType="deficit"
+          <MapTooltip 
+            data={{
+              deficit_thousands: tooltipData.data.deficit_thousands
+            }}
+            countryName={tooltipData.data.country_name}
           />
         </div>
       )}

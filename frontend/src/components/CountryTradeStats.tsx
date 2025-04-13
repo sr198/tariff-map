@@ -40,23 +40,9 @@ const CountryTradeStats: React.FC<CountryTradeStatsProps> = ({
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Exports</h3>
+          <h3 className="text-sm font-medium text-gray-500 mb-2">Country ID</h3>
           <p className="text-2xl font-bold text-gray-900">
-            {deficitData.exports.toFixed(2)}B USD
-          </p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Imports</h3>
-          <p className="text-2xl font-bold text-gray-900">
-            {deficitData.imports.toFixed(2)}B USD
-          </p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Trade Balance</h3>
-          <p className="text-2xl font-bold text-gray-900">
-            {deficitData.balance > 0 ? '+' : ''}{deficitData.balance.toFixed(2)}B USD
+            {deficitData.country_id}
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@ import {
 } from 'react-simple-maps';
 import { scaleLinear } from 'd3-scale';
 import { useUsTariffData } from '../hooks/useUsTariffData';
-import Tooltip from './Tooltip';
+import MapTooltip from './MapTooltip';
 
 // Use CDN URL for the geography data
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -299,14 +299,12 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
           className="fixed z-50"
           style={tooltipStyles(tooltipData.x, tooltipData.y)}
         >
-          <Tooltip 
+          <MapTooltip 
             data={{
-              ...tooltipData.data,
-              tariff_rate_1: activeTab === 1 ? tooltipData.data.tariff_rate_1 : tooltipData.data.tariff_rate_2,
-              date_1: activeTab === 1 ? tooltipData.data.date_1 : tooltipData.data.date_2
+              claimed_tariff: tooltipData.data.tariff_rate_1,
+              reciprocal_tariff: tooltipData.data.tariff_rate_2
             }}
             countryName={tooltipData.countryName}
-            mapType="tariff"
           />
         </div>
       )}

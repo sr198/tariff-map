@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchCountries } from '@/services/tradeService';
+import { fetchCountries, Country } from '@/services/tradeService';
 
 interface CountryDropdownProps {
   onCountrySelect: (countryCode: string) => void;
@@ -7,7 +7,7 @@ interface CountryDropdownProps {
 }
 
 const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, className = '' }) => {
-  const [countries, setCountries] = useState<{ iso_alpha3: string; name: string }[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +62,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, clas
       >
         <option value="">Select a country</option>
         {countries.map((country) => (
-          <option key={country.iso_alpha3} value={country.iso_alpha3}>
+          <option key={country.iso3_code} value={country.iso3_code}>
             {country.name}
           </option>
         ))}

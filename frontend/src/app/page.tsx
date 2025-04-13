@@ -54,8 +54,8 @@ export default function Home() {
         const codeToName: Record<string, string> = {};
         
         countries.forEach(country => {
-          nameToCode[country.name] = country.iso3;
-          codeToName[country.iso3] = country.name;
+          nameToCode[country.name] = country.iso3_code;
+          codeToName[country.iso3_code] = country.name;
         });
         
         setCountryNameToCode(nameToCode);

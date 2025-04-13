@@ -32,9 +32,10 @@ interface CountryDetailsProps {
   countryId?: number;
   countryName?: string;
   onClose?: () => void;
+  mapType?: 'tariff' | 'deficit';
 }
 
-const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryId, countryName: propCountryName, onClose }) => {
+const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryId, countryName: propCountryName, onClose, mapType = 'tariff' }) => {
   const { countryId: urlCountryId } = useParams<{ countryId: string }>();
   const [tradeData, setTradeData] = useState<TradeSummaryResponse | null>(null);
   const [country, setCountry] = useState<Country | null>(null);
@@ -121,11 +122,11 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
   };
 
   const chartData = {
-    labels: filteredData.map(item => item.year),
+    labels: [...filteredData].reverse().map(item => item.year),
     datasets: [
       {
         label: 'Exports',
-        data: filteredData.map(item => item.export),
+        data: [...filteredData].reverse().map(item => item.export),
         borderColor: 'rgb(16, 185, 129)', // emerald-500
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true,
@@ -135,7 +136,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
       },
       {
         label: 'Imports',
-        data: filteredData.map(item => item.import_),
+        data: [...filteredData].reverse().map(item => item.import_),
         borderColor: 'rgb(59, 130, 246)', // blue-500
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
@@ -145,7 +146,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
       },
       {
         label: 'Trade Deficit',
-        data: filteredData.map(item => item.trade_deficit),
+        data: [...filteredData].reverse().map(item => item.trade_deficit),
         borderColor: 'rgb(239, 68, 68)', // red-500
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
         fill: true,
@@ -240,12 +241,12 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
 
   return (
     <div className="space-y-8">
-      {/* Trump Tariffs Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
-        <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
-        <div className="bg-white rounded-lg shadow p-4">
-          {country?.trump_tariffs && country.trump_tariffs.length > 0 ? (
+      {/* Show Trump Tariffs first if viewing from tariff map */}
+      {mapType === 'tariff' && country?.trump_tariffs && country.trump_tariffs.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
+          <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
+          <div className="bg-white rounded-lg shadow p-4">
             <div className="space-y-6">
               {[...country.trump_tariffs]
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -298,60 +299,27 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                   );
                 })}
             </div>
-          ) : (
-            <p className="text-gray-500">No Trump tariff data available</p>
-          )}
-        </div>
-      </div>
-
-      {/* WTO Tariffs Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
-        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
-        {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {country.tariffs_on_us_imports && (
-                <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {propCountryName || country?.name || 'Unknown Country'} on US Imports</div>
-                  <div className="text-2xl font-semibold text-navy-900">
-                    {country.tariffs_on_us_imports.simple_average.toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {country.tariffs_on_us_imports.weighted_average.toFixed(1)}%
-                  </div>
-                </div>
-              )}
-              
-              {country.us_tariffs_on_imports && (
-                <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {propCountryName || country?.name || 'Unknown Country'} Imports</div>
-                  <div className="text-2xl font-semibold text-navy-900">
-                    {country.us_tariffs_on_imports.simple_average.toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {country.us_tariffs_on_imports.weighted_average.toFixed(1)}%
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
-              Based on WTO's {country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
-              <br />
-              <span className="italic">(Note: This may differ from claims made by governments.)</span>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Trade Details Section */}
+      {/* Trade Details Section - Always show, but order depends on mapType */}
       {latestData && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-1 text-navy-900">Trade Details</h2>
           <p className="text-sm text-gray-600 mb-4">Latest trade statistics between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              
+              <div className="bg-[#EAF4FF] rounded-lg p-4">
+                <div className="text-sm text-navy-700 mb-1">US Trade Balance with {propCountryName || country?.name || 'Unknown Country'}</div>
+                <div className={`text-2xl font-semibold ${latestData.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
+                  ${formatLargeNumber(latestData.trade_deficit)}
+                </div>
+                <div className="text-sm text-navy-600 mt-2">
+                  Data from {latestData.year}
+                </div>
+              </div>
+
               <div className="bg-[#EAF4FF] rounded-lg p-4">
                 <div className="text-sm text-navy-700 mb-1">Total US Export to {propCountryName || country?.name || 'Unknown Country'}</div>
                 <div className="text-2xl font-semibold text-navy-900">
@@ -366,18 +334,6 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                 <div className="text-sm text-navy-700 mb-1">Total US Import from {propCountryName || country?.name || 'Unknown Country'}</div>
                 <div className="text-2xl font-semibold text-navy-900">
                   ${formatLargeNumber(latestData.import_)}
-                </div>
-                <div className="text-sm text-navy-600 mt-2">
-                  Data from {latestData.year}
-                </div>
-              </div>
-              
-              
-              
-              <div className="bg-[#EAF4FF] rounded-lg p-4">
-                <div className="text-sm text-navy-700 mb-1">US Trade Balance with {propCountryName || country?.name || 'Unknown Country'}</div>
-                <div className={`text-2xl font-semibold ${latestData.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                  ${formatLargeNumber(latestData.trade_deficit)}
                 </div>
                 <div className="text-sm text-navy-600 mt-2">
                   Data from {latestData.year}
@@ -426,49 +382,154 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
               <Line data={chartData} options={options} />
             </div>
 
-            {/* Trade Table */}
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
-                      Year
-                    </th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
-                      US Export
-                    </th>
-                    
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
-                      US Import
-                    </th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
-                      US Trade Balance
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((item) => (
-                    <tr key={item.year}>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                        {item.year}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                        {formatCurrency(item.export)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                        {formatCurrency(item.import_)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                        {formatCurrency(item.trade_deficit)}
-                      </td>
+            {/* Trade History Table */}
+            <div className="mt-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Year
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Exports
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Imports
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trade Balance
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredData.map((item) => (
+                      <tr key={item.year} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {item.year}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          ${formatLargeNumber(item.export)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          ${formatLargeNumber(item.import_)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`${item.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
+                            ${formatLargeNumber(item.trade_deficit)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Show Trump Tariffs second if viewing from deficit map */}
+      {mapType === 'deficit' && country?.trump_tariffs && country.trump_tariffs.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
+          <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="space-y-6">
+              {[...country.trump_tariffs]
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .map((tariff, index) => {
+                  // Calculate gradient color based on tariff rate
+                  const rate = tariff.rate;
+                  // Normalize to 0-1 range using 10% as minimum and 150% as maximum
+                  const minRate = 10;
+                  const maxRate = 150;
+                  const normalizedRate = Math.min(Math.max((rate - minRate) / (maxRate - minRate), 0), 1);
+                  
+                  // Create a gradient from orange (rgb(255, 165, 0)) to red (rgb(255, 0, 0))
+                  const red = 255;
+                  const green = Math.floor(165 * (1 - normalizedRate));
+                  const blue = 0;
+                  const color = `rgb(${red}, ${green}, ${blue})`;
+                  
+                  return (
+                    <div key={index} className="relative pl-12">
+                      {/* Timeline line */}
+                      {index !== (country.trump_tariffs?.length ?? 0) - 1 && (
+                        <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
+                      )}
+                      {/* Timeline dot with calendar icon */}
+                      <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      {/* Timeline content */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900">{tariff.date}</span>
+                          <span className="text-2xl font-bold" style={{ color }}>
+                            {tariff.rate.toFixed(1)}%
+                          </span>
+                        </div>
+                        {tariff.description && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <p className="text-sm text-gray-500">
+                              {tariff.description}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WTO Tariffs Section */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
+        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
+        {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {country.tariffs_on_us_imports && (
+                <div className="bg-[#EAF4FF] rounded-lg p-4">
+                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {propCountryName || country?.name || 'Unknown Country'} on US Imports</div>
+                  <div className="text-2xl font-semibold text-navy-900">
+                    {country.tariffs_on_us_imports.simple_average.toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-navy-600 mt-2">
+                    Weighted Average: {country.tariffs_on_us_imports.weighted_average.toFixed(1)}%
+                  </div>
+                </div>
+              )}
+              
+              {country.us_tariffs_on_imports && (
+                <div className="bg-[#EAF4FF] rounded-lg p-4">
+                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {propCountryName || country?.name || 'Unknown Country'} Imports</div>
+                  <div className="text-2xl font-semibold text-navy-900">
+                    {country.us_tariffs_on_imports.simple_average.toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-navy-600 mt-2">
+                    Weighted Average: {country.us_tariffs_on_imports.weighted_average.toFixed(1)}%
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
+              Based on WTO's {country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
+              <br />
+              <span className="italic">(Note: This may differ from claims made by governments.)</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

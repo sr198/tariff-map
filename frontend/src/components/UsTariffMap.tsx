@@ -85,6 +85,21 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
   const [activeTab, setActiveTab] = useState(1);
   const { tariffData, loading, error } = useUsTariffData();
 
+  // Format date for display
+  const formatDateForDisplay = useCallback((dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }, []);
+
+  // Get dates from tariff data
+  const dates = useMemo(() => {
+    if (!tariffData || Object.keys(tariffData).length === 0) return { date1: '', date2: '' };
+    const firstCountry = Object.values(tariffData)[0];
+    return {
+      date1: firstCountry.date_1,
+      date2: firstCountry.date_2
+    };
+  }, [tariffData]);
+
   // Check if device is mobile
   React.useEffect(() => {
     const checkMobile = () => {
@@ -116,8 +131,8 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         data: {
           tariff_rate_1: countryData.tariff_rate_1,
           tariff_rate_2: countryData.tariff_rate_2,
-          date_1: 'April 2',
-          date_2: 'April 9'
+          date_1: countryData.date_1,
+          date_2: countryData.date_2
         },
         x: event.clientX,
         y: event.clientY,
@@ -254,7 +269,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
-            April 2
+            {dates.date1 ? formatDateForDisplay(dates.date1) : 'Loading...'}
           </button>
           <button
             onClick={() => setActiveTab(2)}
@@ -264,7 +279,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
-            April 9
+            {dates.date2 ? formatDateForDisplay(dates.date2) : 'Loading...'}
           </button>
         </div>
 

@@ -177,6 +177,7 @@ export default function Home() {
                     countryId={parseInt(selectedCountry.code)}
                     countryName={selectedCountry.name}
                     onClose={() => setSelectedCountry(null)}
+                    mapType={activeMap}
                   />
                 ) : (
                   <GlobalStats />
@@ -228,17 +229,17 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="text-gray-500 hover:text-gray-700"
                   >
-                    World Bank WITS
+                    World Bank Data (WITS)
                   </a>
                 </li>
                 <li>
                   <a 
-                    href="https://data.worldbank.org/" 
+                    href="http://whitehouse.gov" 
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-500 hover:text-gray-700"
                   >
-                    World Bank Data
+                    The White House
                   </a>
                 </li>
               </ul>

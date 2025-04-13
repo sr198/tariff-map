@@ -415,8 +415,8 @@ async def get_trump_tariff_timeline():
                 "commentary": data["commentary"]
             })
         
-        # Sort by date in descending order (newest first)
-        timeline_entries.sort(key=lambda x: x["date"], reverse=True)
+        # Sort by date in ascending order (oldest first)
+        timeline_entries.sort(key=lambda x: x["date"])
         
         return {
             "timeline": timeline_entries

@@ -9,7 +9,16 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 export const metadata: Metadata = {
   title: "US Tariff Map",
   description: "Interactive visualization of US trade tariffs and relationships",
-  icons: null,
+  icons: {
+    icon: [
+      { url: '/favicon/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/favicon/favicon.svg', type: 'image/svg+xml' }
+    ]
+  },
+  manifest: '/favicon/manifest.json',
+  themeColor: '#669966',
 };
 
 export const viewport: Viewport = {

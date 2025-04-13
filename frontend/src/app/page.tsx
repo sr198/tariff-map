@@ -91,7 +91,7 @@ export default function Home() {
                 className="h-8 w-8"
               />
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-gray-900 font-display">
+                <h1 className="text-lg font-semibold tracking-tight text-gray-1000 font-display">
                   US Tariff and Trade Lens
                 </h1>
               </div>

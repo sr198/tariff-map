@@ -1,0 +1,16 @@
+{
+  "name": "US Tariff and Trade Lens",
+  "short_name": "TariffMap",
+  "icons": [
+    {
+      "src": "/favicon/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#669966",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+} 

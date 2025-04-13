@@ -131,25 +131,37 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
         data: tradeData.map(d => d.export / 1000000),
         borderColor: 'rgb(59, 130, 246)', // blue
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.1,
+        tension: 0.4,
+        fill: true,
         yAxisID: 'y',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
       },
       {
         label: 'Imports',
         data: tradeData.map(d => d.import_ / 1000000),
         borderColor: 'rgb(16, 185, 129)', // green
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        tension: 0.1,
+        tension: 0.4,
+        fill: true,
         yAxisID: 'y',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
       },
       {
         label: 'Trade Deficit',
         data: tradeData.map(d => Math.abs(d.trade_deficit) / 1000000),
         borderColor: 'rgb(239, 68, 68)', // red
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        tension: 0.1,
+        tension: 0.4,
+        fill: true,
         yAxisID: 'y',
         borderDash: [5, 5], // Make deficit line dashed
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
       },
     ],
   };
@@ -169,26 +181,42 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
           padding: 20,
         },
       },
+      title: {
+        display: true,
+        text: 'US Trade Flow Over Time',
+        font: {
+          size: 16,
+          weight: 'bold' as const,
+        },
+      },
       tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        padding: 12,
         callbacks: {
           label: (context: any) => {
             const value = context.raw;
-            return `${context.dataset.label}: ${value.toFixed(1)}B USD`;
+            return `${context.dataset.label}: ${formatLargeNumber(value * 1000000)}`;
           },
         },
       },
     },
     scales: {
       y: {
-        type: 'linear' as const,
-        display: true,
-        position: 'left' as const,
-        title: {
-          display: true,
-          text: 'Billions USD',
-        },
+        beginAtZero: false,
         grid: {
-          drawOnChartArea: true,
+          color: 'rgba(229, 231, 235, 0.5)',
+        },
+        ticks: {
+          callback: (value: any) => formatLargeNumber(value * 1000000),
+        },
+      },
+      x: {
+        grid: {
+          display: false,
         },
       },
     },
@@ -219,7 +247,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
             <div className="text-2xl font-semibold text-blue-600">
               {formatLargeNumber(latestData.export)}
             </div>
-            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+            <div className="text-xs text-gray-500 mt-2">As of {latestData.year}</div>
           </div>
           
           <div className="bg-gray-50 rounded-lg p-4">
@@ -227,7 +255,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
             <div className="text-2xl font-semibold text-emerald-600">
               {formatLargeNumber(latestData.import_)}
             </div>
-            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+            <div className="text-xs text-gray-500 mt-2">As of {latestData.year}</div>
           </div>
           
           <div className="bg-gray-50 rounded-lg p-4">
@@ -235,7 +263,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
             <div className="text-2xl font-semibold text-red-600">
               {formatLargeNumber(Math.abs(latestData.trade_deficit))}
             </div>
-            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+            <div className="text-xs text-gray-500 mt-2">As of {latestData.year}</div>
           </div>
         </div>
 

@@ -28,8 +28,8 @@ const createColorScale = () => {
   return scaleLinear<string>()
     .domain([0, 25, 50, 75, 100, 125, 150])
     .range([
-      '#FED7AA', // 0% - Light orange
-      '#FDBA74', // 25% - Light orange
+      '#FFE4CC', // 0% - Brighter light orange
+      '#FFD4A3', // 25% - Brighter light orange
       '#FB923C', // 50% - Orange
       '#F97316', // 75% - Dark orange
       '#EA580C', // 100% - Darker orange
@@ -52,14 +52,16 @@ const projectionConfig = {
 };
 
 // Memoize the tooltip styles
-const tooltipStyles = (x: number, y: number) => ({
+const tooltipStyles = (x: number, y: number, isMobile: boolean) => ({
   position: 'fixed' as const,
   zIndex: 1000,
   pointerEvents: 'none' as const,
-  left: `${x + 12}px`,
-  top: `${y - 12}px`,
+  left: isMobile ? '50%' : `${x + 12}px`,
+  top: isMobile ? 'auto' : `${y - 12}px`,
+  bottom: isMobile ? '20px' : 'auto',
+  transform: isMobile ? 'translateX(-50%)' : 'translate(0, -100%)',
   transition: 'transform 0.1s ease-out',
-  transform: 'translate(0, -100%)',
+  maxWidth: '90vw',
 });
 
 interface UsTariffMapProps {
@@ -219,12 +221,12 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
 
   return (
     <div className="relative w-full">
-      <div style={{ aspectRatio: '21/9' }} className="relative">
-        {/* Date Tabs - Make them smaller on mobile */}
-        <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 flex space-x-1 md:space-x-2">
+      <div style={{ aspectRatio: isMobile ? '4/3' : '21/9' }} className="relative">
+        {/* Date Tabs - Make them smaller and more compact on mobile */}
+        <div className="absolute top-1 left-1 md:top-4 md:left-4 z-10 flex space-x-1 md:space-x-2">
           <button
             onClick={() => setActiveTab(1)}
-            className={`px-2 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
+            className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
               activeTab === 1
                 ? 'bg-gray-900 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
@@ -234,7 +236,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
           </button>
           <button
             onClick={() => setActiveTab(2)}
-            className={`px-2 py-1 md:px-3 md:py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors ${
+            className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
               activeTab === 2
                 ? 'bg-gray-900 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
@@ -257,47 +259,46 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         </ComposableMap>
 
         {/* Color Legend - Make it smaller and more compact on mobile */}
-        {!isMobile && (
-          <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-2 md:p-4">
-            <div className="text-[10px] md:text-sm font-medium mb-1 md:mb-2">Tariff Rate</div>
-            <div className="flex items-center gap-1">
-              <div className="h-1.5 md:h-2 w-16 md:w-48 bg-gradient-to-r from-[#FED7AA] to-[#9A3412] rounded" />
-            </div>
-            <div className="flex justify-between mt-0.5 md:mt-1">
-              <div className="text-[8px] md:text-xs text-gray-600">0%</div>
-              <div className="text-[8px] md:text-xs text-gray-600">150%</div>
-            </div>
+        <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4"
+        title='Based on the latest Trump reciprocal tariffs rate.'>
+          <div className="text-[8px] md:text-sm font-medium mb-0.5 md:mb-2">Tariff Rate</div>
+          <div className="flex items-center gap-1">
+            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#FED7AA] to-[#9A3412] rounded" />
           </div>
-        )}
+          <div className="flex justify-between mt-0.5 md:mt-1">
+            <div className="text-[6px] md:text-xs text-gray-600">0%</div>
+            <div className="text-[6px] md:text-xs text-gray-600">150%</div>
+          </div>
+        </div>
 
-        {/* Zoom Controls - Make them smaller on mobile */}
-        <div className="absolute right-2 md:right-4 top-2 md:top-4 flex flex-col space-y-1 md:space-y-2 z-10">
+        {/* Zoom Controls - Make them smaller and more compact on mobile */}
+        <div className="absolute right-1 md:right-4 top-1 md:top-4 flex flex-col space-y-0.5 md:space-y-2 z-10">
           <button
             onClick={handleZoomIn}
-            className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1.5 md:p-2 hover:bg-gray-50 transition-colors"
+            className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-2 hover:bg-gray-50 transition-colors"
             aria-label="Zoom in"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 md:h-5 md:w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
           </button>
           <button
             onClick={handleZoomOut}
-            className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1.5 md:p-2 hover:bg-gray-50 transition-colors"
+            className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-2 hover:bg-gray-50 transition-colors"
             aria-label="Zoom out"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 md:h-5 md:w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Tooltip */}
-      {tooltipData && (
+      {/* Tooltip - Only show on non-mobile screens */}
+      {tooltipData && !isMobile && (
         <div
           className="fixed z-50"
-          style={tooltipStyles(tooltipData.x, tooltipData.y)}
+          style={tooltipStyles(tooltipData.x, tooltipData.y, isMobile)}
         >
           <MapTooltip 
             data={{

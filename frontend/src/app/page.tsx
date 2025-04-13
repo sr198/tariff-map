@@ -1,17 +1,11 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import CountryDetails from '@/components/CountryDetails';
-import Link from 'next/link';
 import GlobalStats from '@/components/GlobalStats';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { measureComponentRender } from '@/utils/performance';
-import StorySlideshow from '@/components/StorySlideshow';
 import { fetchCountries } from '@/services/tradeService';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CountryDropdown from '@/components/CountryDropdown';
 import AdComponent from '@/components/AdComponent';
 import UsTariffMap from '@/components/UsTariffMap';
 import UsDeficitMap from '../components/UsDeficitMap';
@@ -30,15 +24,9 @@ const UsTariffMapComponent = dynamic(() => import('@/components/UsTariffMap'), {
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<{ name: string; code: string } | null>(null);
   const [activeMap, setActiveMap] = useState<'tariff' | 'deficit'>('tariff');
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['global']));
   const [countryNameToCode, setCountryNameToCode] = useState<Record<string, string>>({});
   const [countryCodeToName, setCountryCodeToName] = useState<Record<string, string>>({});
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
-
-  // Use intersection observer for the details section
-  const [detailsRef, isDetailsVisible] = useIntersectionObserver({
-    threshold: 0.1,
-  });
 
   // Fetch countries from API
   useEffect(() => {
@@ -70,52 +58,6 @@ export default function Home() {
     loadData();
   }, []);
 
-  // Memoize the section toggle handler
-  const toggleSection = useCallback((section: string) => {
-    setExpandedSections(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(section)) {
-        newSet.delete(section);
-      } else {
-        newSet.add(section);
-      }
-      return newSet;
-    });
-  }, []);
-
-  // Memoize the country selection handler
-  const handleCountrySelect = useCallback((country: { name: string; code: string }) => {
-    setSelectedCountry(country);
-  }, []);
-
-  // Memoize the country clear handler
-  const clearSelectedCountry = useCallback(() => {
-    setSelectedCountry(null);
-    setExpandedSections(prev => {
-      const newSet = new Set(prev);
-      newSet.delete('country');
-      return newSet;
-    });
-  }, []);
-
-  // Memoize the section visibility check
-  const isSectionExpanded = useCallback((section: string) => {
-    return expandedSections.has(section);
-  }, [expandedSections]);
-
-  // Memoize the scroll handler
-  const scrollToSection = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, []);
-
-  const handleCountryHover = (countryName: string | null) => {
-    // This function is intentionally left empty as it's just a placeholder
-    // for future hover functionality
-  };
-
   // Get the country code for the selected country
   const getCountryCode = useCallback((countryName: string): string | undefined => {
     let code = countryNameToCode[countryName];
@@ -135,19 +77,10 @@ export default function Home() {
     return code;
   }, [countryNameToCode]);
 
-  // Measure component render time
-  const cleanup = measureComponentRender('Home');
-
-  React.useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, [cleanup]);
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm bg-white/80">
+      <header className="bg-white border-b border-gray-100 fixed top-0 left-0 right-0 z-50 backdrop-blur-sm bg-white/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
@@ -159,43 +92,73 @@ export default function Home() {
               />
               <div>
                 <h1 className="text-lg font-semibold tracking-tight text-gray-900 font-display">
-                  US Trade & Tariff Map
+                  US Tariff and Trade Lens
                 </h1>
+                <p className='text-sm text-gray-500'>Tracking US trade and tariff relations across the world in real-time.</p>
               </div>
             </div>
+
+            {/* Buy Me a Coffee Button */}
+            <a
+              href="https://www.buymeacoffee.com/tariffmap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            >
+              <span className="hidden sm:inline">Buy me a coffee</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 transform group-hover:rotate-12 transition-transform duration-300"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 8h12v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8z" />
+                <path d="M6 8V5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v3" />
+                <path d="M9 16v-4" />
+                <path d="M15 16v-4" />
+                <path d="M12 16v-4" />
+                <path d="M6 12h12" />
+              </svg>
+            </a>
           </div>
         </div>
       </header>
 
       <ErrorBoundary>
-        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-          <div className="flex flex-col space-y-6 w-full">
+        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20 pb-24">
+          <div className="flex flex-col w-full">
             {/* Map Type Tabs */}
-            <div className="flex justify-end space-x-2 mb-4">
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setActiveMap('tariff')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
                   activeMap === 'tariff'
                     ? 'bg-gray-900 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
+                title='Shows average tariff rates the US imposes on each country, as of April 2025'
               >
                 Tariff Map
               </button>
               <button
                 onClick={() => setActiveMap('deficit')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
                   activeMap === 'deficit'
                     ? 'bg-gray-900 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
+                title='Shows if the US has a trade surplus or deficit with each country.'
               >
                 Deficit Map
               </button>
             </div>
             
             {/* Map Container */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden -mt-1">
               {activeMap === 'tariff' ? (
                 <UsTariffMapComponent onCountrySelect={setSelectedCountry} />
               ) : (
@@ -203,21 +166,12 @@ export default function Home() {
               )}
             </div>
 
-            {/* Top Ad - Horizontal Banner */}
-            <div className="w-full flex justify-center my-4">
-              <AdComponent 
-                adSlot="top-banner" 
-                adFormat="horizontal" 
-                className="w-full max-w-[728px] h-[90px]"
-              />
-            </div>
-
             {/* Details Section */}
-            <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
+            <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in mt-6">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-semibold text-gray-900">
-                    {selectedCountry ? `US Trade and Tariff Details With ${selectedCountry.name}` : 'Global Trade Overview'}
+                    {selectedCountry ? `US Trade and Tariff Details With ${selectedCountry.name}` : 'US Global Trade Summary'}
                   </h2>
                   {selectedCountry && (
                     <button
@@ -255,7 +209,7 @@ export default function Home() {
       </ErrorBoundary>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 mt-auto">
+      <footer className="bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
@@ -271,6 +225,9 @@ export default function Home() {
               </div>
               <p className="text-sm text-gray-500">
                 Tracking global trade relationships and tariff impacts in real-time.
+              </p>
+              <p className="text-sm text-gray-500 mt-4">
+                © {new Date().getFullYear()} TariffMap.live. All rights reserved.
               </p>
             </div>
             <div className="md:text-right">
@@ -298,19 +255,6 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-          </div>
-          
-          {/* Footer Ad - Horizontal Banner */}
-          <div className="w-full flex justify-center mt-8">
-            <AdComponent 
-              adSlot="footer-banner" 
-              adFormat="horizontal" 
-              className="w-full max-w-[728px] h-[90px]"
-            />
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-gray-100 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} TariffMap.live. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { fetchUSTradeOverview } from '../services/tradeService';
+import { fetchTradeSummary } from '../services/tradeService';
 import type { TradeSummary } from '../services/tradeService';
 
 ChartJS.register(
@@ -33,7 +33,8 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchUSTradeOverview();
+        // Use US (840) as reporter and World (0) as partner
+        const response = await fetchTradeSummary(840, 0);
         setTradeData(response.summary);
         setLoading(false);
       } catch (err) {
@@ -114,31 +115,80 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     datasets: [
       {
         label: 'Trade Deficit (Billions USD)',
-        data: tradeData.map(d => d.trade_deficit / 1000000),
-        borderColor: 'rgb(107, 114, 128)',
-        backgroundColor: 'rgba(107, 114, 128, 0.1)',
+        data: tradeData.map(d => Math.abs(d.trade_deficit) / 1000000),
+        borderColor: 'rgb(239, 68, 68)',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         tension: 0.1,
       },
     ],
   };
 
-  const chartOptions = {
+  const combinedData = {
+    labels: tradeData.map(d => d.year),
+    datasets: [
+      {
+        label: 'Exports',
+        data: tradeData.map(d => d.export / 1000000),
+        borderColor: 'rgb(59, 130, 246)', // blue
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.1,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Imports',
+        data: tradeData.map(d => d.import_ / 1000000),
+        borderColor: 'rgb(16, 185, 129)', // green
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.1,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Trade Deficit',
+        data: tradeData.map(d => Math.abs(d.trade_deficit) / 1000000),
+        borderColor: 'rgb(239, 68, 68)', // red
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        tension: 0.1,
+        yAxisID: 'y',
+        borderDash: [5, 5], // Make deficit line dashed
+      },
+    ],
+  };
+
+  const combinedChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
     plugins: {
       legend: {
-        display: false,
+        position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+        },
       },
-      title: {
-        display: true,
-        text: 'US Global Trade Overview',
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const value = context.raw;
+            return `${context.dataset.label}: ${value.toFixed(1)}B USD`;
+          },
+        },
       },
     },
     scales: {
       y: {
-        beginAtZero: true,
+        type: 'linear' as const,
+        display: true,
+        position: 'left' as const,
         title: {
           display: true,
           text: 'Billions USD',
+        },
+        grid: {
+          drawOnChartArea: true,
         },
       },
     },
@@ -147,20 +197,53 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
   if (loading) return <div>Loading trade statistics...</div>;
   if (error) return <div className="text-red-600">{error}</div>;
 
+  const latestData = tradeData[tradeData.length - 1];
+  const formatLargeNumber = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value * 1000); // Multiply by 1000 since values are in thousands
+  };
+
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">US Exports</h3>
-          <Line data={exportData} options={chartOptions} />
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">US Global Trade Overview</h3>
+        
+        {/* Trade Summary Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="text-sm text-gray-600 mb-1">Total US Exports</div>
+            <div className="text-2xl font-semibold text-blue-600">
+              {formatLargeNumber(latestData.export)}
+            </div>
+            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="text-sm text-gray-600 mb-1">Total US Imports</div>
+            <div className="text-2xl font-semibold text-emerald-600">
+              {formatLargeNumber(latestData.import_)}
+            </div>
+            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="text-sm text-gray-600 mb-1">US Trade Deficit</div>
+            <div className="text-2xl font-semibold text-red-600">
+              {formatLargeNumber(Math.abs(latestData.trade_deficit))}
+            </div>
+            <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
+          </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">US Imports</h3>
-          <Line data={importData} options={chartOptions} />
+
+        <div className="h-[400px]">
+          <Line data={combinedData} options={combinedChartOptions} />
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Trade Deficit</h3>
-          <Line data={deficitData} options={chartOptions} />
+        <div className="mt-4 text-sm text-gray-500">
+          <p>The trade deficit (red dashed line) shows the difference between imports and exports. A rising deficit indicates imports are growing faster than exports.</p>
         </div>
       </div>
     </div>

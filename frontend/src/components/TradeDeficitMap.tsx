@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import { scaleLog, scaleLinear } from 'd3-scale';
 import { fetchTradeDeficitMap, TradeDeficitEntry } from '../services/tradeService';
-import TradeDeficitTooltip from './TradeDeficitTooltip';
+import Tooltip from './Tooltip';
 
 // Use CDN URL for the geography data
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -32,7 +32,6 @@ const COUNTRY_TO_ISO3: Record<string, string> = {
   'Malaysia': 'MYS',
   'Philippines': 'PHL',
   'Singapore': 'SGP',
-  // Add more mappings as needed
 };
 
 // Color legend data
@@ -62,16 +61,16 @@ interface TradeDeficitMapProps {
   countryCodeToName: Record<string, string>;
   countryMappings: Record<string, string>;
   year?: number;
-  reporterIso3?: string;
-  onCountrySelect?: (countryCode: string, countryName: string) => void;
+  reporterId?: number;
+  onCountrySelect?: (countryId: number, countryName: string) => void;
 }
 
 const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({ 
   countryNameToCode,
   countryCodeToName,
   countryMappings,
-  year,
-  reporterIso3 = 'USA',
+  year = 2022,
+  reporterId = 842, // USA
   onCountrySelect
 }) => {
   const [deficitData, setDeficitData] = useState<Record<string, TradeDeficitEntry>>({});
@@ -79,13 +78,38 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [tooltipData, setTooltipData] = useState<{
     countryName: string;
-    data: TradeDeficitEntry;
+    data: {
+      deficit: number;
+      country_name: string;
+    };
     x: number;
     y: number;
   } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+
+  // Fetch deficit data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchTradeDeficitMap(year, reporterId);
+        // Transform the response into a record of country IDs to entries
+        const data = response.deficits.reduce((acc: Record<string, TradeDeficitEntry>, entry) => {
+          acc[entry.country_id] = entry;
+          return acc;
+        }, {});
+        setDeficitData(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load trade deficit data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [year, reporterId]);
 
   // Check if device is mobile
   useEffect(() => {
@@ -101,143 +125,65 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchTradeDeficitMap(reporterIso3, year);
-        
-        // Convert array to object for easier lookup, using both ISO3 and country name as keys
-        const deficitMap = response.deficits.reduce((acc, item) => {
-          acc[item.country_code] = item;
-          // Also store by country name if we have it
-          if (item.country_name) {
-            acc[item.country_name] = item;
-          }
-          return acc;
-        }, {} as Record<string, TradeDeficitEntry>);
-        
-        setDeficitData(deficitMap);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load trade deficit data');
-        console.error('Error loading trade deficit data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Memoize the color scale
+  const colorScale = useMemo(() => {
+    return scaleLinear<string>()
+      .domain([-50, -25, 0, 25, 50])
+      .range([
+        '#7f1d1d', // Dark red for large deficits
+        '#ef4444', // Red for moderate deficits
+        '#ffffff', // White for balanced trade
+        '#22c55e', // Green for moderate surpluses
+        '#166534'  // Dark green for large surpluses
+      ]);
+  }, []);
 
-    loadData();
-  }, [year, reporterIso3]);
+  // Memoize the getCountryColor function
+  const getCountryColor = useCallback((geo: any) => {
+    const countryId = geo?.id;
+    if (!countryId) return '#F1F5F9';
 
-  // Handle mouse enter for tooltip
-  const handleMouseEnter = useCallback((countryName: string, event: React.MouseEvent) => {
-    const countryCode = countryNameToCode[countryName];
-    const deficit = countryCode ? deficitData[countryCode] : null;
-    
-    if (deficit) {
-      setTooltipData({
-        countryName: deficit.country_name,
-        data: deficit,
-        x: event.clientX,
-        y: event.clientY
-      });
+    if (countryId === 'USA') {
+      return US_STYLES.fill;
     }
-  }, [countryNameToCode, deficitData]);
 
-  // Handle mouse leave for tooltip
+    const deficit = deficitData[countryId]?.deficit_thousands / 1000000; // Convert to billions
+    if (deficit === undefined) return '#F1F5F9';
+
+    return colorScale(deficit);
+  }, [deficitData, colorScale]);
+
+  // Handle mouse events
+  const handleMouseEnter = useCallback((geo: any, event: any) => {
+    const countryId = geo?.id;
+    const countryName = geo?.properties?.name;
+    if (!countryId || !countryName) return;
+
+    const deficit = deficitData[countryId]?.deficit_thousands / 1000000; // Convert to billions
+    if (deficit === undefined) return;
+
+    setTooltipData({
+      countryName,
+      data: {
+        deficit,
+        country_name: countryName
+      },
+      x: event.clientX,
+      y: event.clientY
+    });
+  }, [deficitData]);
+
   const handleMouseLeave = useCallback(() => {
     setTooltipData(null);
   }, []);
 
-  // Handle country click
-  const handleCountryClick = useCallback((countryName: string) => {
-    const countryCode = countryNameToCode[countryName];
-    
-    if (countryCode && countryCode !== 'USA') {
-      setSelectedCountry(countryCode);
-      
-      if (onCountrySelect) {
-        onCountrySelect(countryCode, countryName);
-      }
-    }
-  }, [countryNameToCode, onCountrySelect]);
+  const handleCountryClick = useCallback((geo: any) => {
+    const countryId = geo?.id;
+    const countryName = geo?.properties?.name;
+    if (!countryId || !countryName) return;
 
-  // Create color scale based on deficit values
-  const colorScale = useMemo(() => {
-    // Don't create scale if no data
-    if (Object.keys(deficitData).length === 0) {
-      return null;
-    }
-
-    // Convert to billions
-    const values = Object.values(deficitData).map(d => d.deficit_thousands / 1000000);
-    const deficitValues = values.filter(v => v < 0).map(v => Math.abs(v)); // Negative values are deficits
-
-    // Find the maximum deficit value
-    const maxDeficit = Math.max(...deficitValues, 1); // Use 1 as minimum to avoid log(0)
-
-    // Create scale for deficits only
-    return scaleLog<string>()
-      .domain([1, maxDeficit])
-      .range(['#ffffff', '#7f1d1d']) // White to darker red (red-800)
-      .clamp(true);
-  }, [deficitData]);
-
-  // Memoize the getCountryColor function
-  const getCountryColor = useCallback((value: number): string => {
-    if (!colorScale) return '#f1f5f9';
-    if (value >= 0) return '#f1f5f9'; // Light gray for surpluses or zero
-    return colorScale(Math.abs(value)); // Dark red scale for deficits (negative values)
-  }, [colorScale]);
-
-  // Memoize the geographies rendering
-  const renderGeographies = useCallback(({ geographies }: { geographies: any[] }) => {
-    return geographies
-      .filter(geo => geo.properties.name !== 'Antarctica')
-      .map(geo => {
-        const countryName = geo.properties.name;
-        const countryCode = countryNameToCode[countryName];
-        const deficit = countryCode ? deficitData[countryCode] : null;
-        const value = deficit ? deficit.deficit_thousands / 1000000 : 0;
-        
-        return (
-          <Geography
-            key={geo.rsmKey}
-            geography={geo}
-            onMouseEnter={(e) => handleMouseEnter(countryName, e as any)}
-            onMouseLeave={handleMouseLeave}
-            onClick={() => handleCountryClick(countryName)}
-            style={{
-              default: {
-                fill: countryName === 'United States of America' 
-                  ? US_STYLES.fill 
-                  : getCountryColor(value),
-                stroke: US_STYLES.stroke,
-                strokeWidth: US_STYLES.strokeWidth,
-                outline: 'none',
-              },
-              hover: {
-                fill: countryName === 'United States of America'
-                  ? US_STYLES.fill
-                  : getCountryColor(value),
-                stroke: '#000',
-                strokeWidth: 1,
-                outline: 'none',
-              },
-              pressed: {
-                fill: countryName === 'United States of America'
-                  ? US_STYLES.fill
-                  : getCountryColor(value),
-                stroke: '#000',
-                strokeWidth: 1,
-                outline: 'none',
-              },
-            }}
-          />
-        );
-      });
-  }, [countryNameToCode, deficitData, getCountryColor, handleMouseEnter, handleMouseLeave, handleCountryClick]);
+    onCountrySelect?.(parseInt(countryId), countryName);
+  }, [onCountrySelect]);
 
   // Handle zoom controls
   const handleZoomIn = useCallback(() => {
@@ -247,6 +193,50 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
   const handleZoomOut = useCallback(() => {
     setZoom(prev => Math.max(prev / 1.5, 1));
   }, []);
+
+  // Memoize the tooltip styles
+  const tooltipStyles = useCallback((x: number, y: number) => ({
+    position: 'fixed' as const,
+    top: y + 10,
+    left: x + 10,
+    zIndex: 1000,
+    pointerEvents: 'none' as const,
+  }), []);
+
+  // Memoize the renderGeographies function
+  const renderGeographies = useCallback(({ geographies }: { geographies: any[] }) => {
+    return geographies.map(geo => {
+      const countryName = geo?.properties?.name;
+      const countryCode = COUNTRY_TO_ISO3[countryName] || countryMappings[countryName];
+
+      return (
+        <Geography
+          key={geo.rsmKey}
+          geography={geo}
+          fill={getCountryColor(geo)}
+          stroke="#FFFFFF"
+          strokeWidth={0.5}
+          style={{
+            default: {
+              outline: 'none',
+            },
+            hover: {
+              fill: '#475569',
+              outline: 'none',
+              cursor: 'pointer',
+            },
+            pressed: {
+              fill: '#1E293B',
+              outline: 'none',
+            },
+          }}
+          onMouseEnter={(event) => handleMouseEnter(geo, event)}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => handleCountryClick(geo)}
+        />
+      );
+    });
+  }, [deficitData, colorScale, handleMouseEnter, handleMouseLeave, handleCountryClick]);
 
   if (loading) {
     return (
@@ -284,11 +274,14 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
           <div className="absolute left-2 md:left-4 bottom-2 md:bottom-4 bg-white rounded-lg shadow-lg p-2 md:p-4">
             <div className="text-[10px] md:text-sm font-medium mb-1 md:mb-2">Trade Deficit (Billions USD)</div>
             <div className="flex items-center gap-1">
-              <div className="h-1.5 md:h-2 w-24 md:w-48 bg-gradient-to-r from-[#ffffff] to-[#7f1d1d] rounded" />
+              <div className="h-1.5 md:h-2 w-24 md:w-48 bg-gradient-to-r from-[#7f1d1d] via-[#ffffff] to-[#166534] rounded" />
             </div>
             <div className="flex justify-between mt-0.5 md:mt-1">
-              <div className="text-[8px] md:text-xs text-gray-600">0</div>
-              <div className="text-[8px] md:text-xs text-gray-600">Higher Deficit</div>
+              {colorLegendStops.map(stop => (
+                <div key={stop.value} className="text-[8px] md:text-xs text-gray-600">
+                  {stop.label}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -315,36 +308,13 @@ const TradeDeficitMap: React.FC<TradeDeficitMapProps> = ({
           </button>
         </div>
 
-        {/* Last Updated */}
-        {!isMobile && (
-          <div className="absolute right-2 md:right-4 bottom-2 md:bottom-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm px-2 py-1 md:px-4 md:py-2">
-            <div className="text-[8px] md:text-xs text-gray-500">Last Updated: April 7 2025</div>
-          </div>
-        )}
-
-        {/* Tooltip */}
         {tooltipData && (
-          <div
-            style={{
-              position: 'fixed',
-              left: `${tooltipData.x + 12}px`,
-              top: `${tooltipData.y - 12}px`,
-              zIndex: 1000,
-              pointerEvents: 'none',
-              transform: 'translate(0, -100%)',
-            }}
-            className="bg-white rounded-lg shadow-lg p-2 max-w-[200px] border border-gray-200"
-          >
-            <div className="font-semibold text-gray-900 text-sm mb-1">{tooltipData.countryName}</div>
-            <div className="space-y-0.5 text-xs">
-              <div className="flex justify-between gap-4">
-                <span className="text-gray-500">Trade Balance:</span>
-                <span className={`font-medium whitespace-nowrap ${tooltipData.data.deficit_thousands < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {tooltipData.data.deficit_thousands < 0 ? '-' : '+'}
-                  {Math.abs(tooltipData.data.deficit_thousands / 1000000).toFixed(1)}B
-                </span>
-              </div>
-            </div>
+          <div style={tooltipStyles(tooltipData.x, tooltipData.y)}>
+            <Tooltip
+              data={tooltipData.data}
+              countryName={tooltipData.countryName}
+              mapType="deficit"
+            />
           </div>
         )}
       </div>

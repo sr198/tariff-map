@@ -4,29 +4,20 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import CountryDetails from '@/components/CountryDetails';
 import Link from 'next/link';
-import WorldMap from '@/components/WorldMap';
 import GlobalStats from '@/components/GlobalStats';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { measureComponentRender } from '@/utils/performance';
 import StorySlideshow from '@/components/StorySlideshow';
-import { fetchCountries, fetchCountryMappings } from '@/services/tradeService';
+import { fetchCountries } from '@/services/tradeService';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CountryDropdown from '@/components/CountryDropdown';
 import AdComponent from '@/components/AdComponent';
-import UnderConstruction from '@/components/UnderConstruction';
+import UsTariffMap from '@/components/UsTariffMap';
+import UsDeficitMap from '../components/UsDeficitMap';
 
 // Dynamically import the map components to avoid SSR issues
-const WorldMapComponent = dynamic(() => import('@/components/WorldMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-[21/9] bg-gray-100 flex items-center justify-center">
-      Loading Map...
-    </div>
-  ),
-});
-
-const TradeDeficitMapComponent = dynamic(() => import('@/components/TradeDeficitMap'), {
+const UsTariffMapComponent = dynamic(() => import('@/components/UsTariffMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full aspect-[21/9] bg-gray-100 flex items-center justify-center">
@@ -37,52 +28,38 @@ const TradeDeficitMapComponent = dynamic(() => import('@/components/TradeDeficit
 
 // Main component
 export default function Home() {
-  // Check if we should show the under construction page
-  const showUnderConstruction = process.env.NEXT_PUBLIC_DISABLE_COMING_SOON !== 'true';
-  
-  // If under construction is enabled, show the under construction page
-  if (showUnderConstruction) {
-    return <UnderConstruction />;
-  }
-  
-  const [activeSection, setActiveSection] = useState('map');
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<{ name: string; code: string } | null>(null);
+  const [activeMap, setActiveMap] = useState<'tariff' | 'deficit'>('tariff');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['global']));
   const [countryNameToCode, setCountryNameToCode] = useState<Record<string, string>>({});
   const [countryCodeToName, setCountryCodeToName] = useState<Record<string, string>>({});
-  const [countryMappings, setCountryMappings] = useState<Record<string, string>>({});
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
-  const [activeMap, setActiveMap] = useState<'tariff' | 'deficit'>('deficit');
 
   // Use intersection observer for the details section
   const [detailsRef, isDetailsVisible] = useIntersectionObserver({
     threshold: 0.1,
   });
 
-  // Fetch countries and mappings from API
+  // Fetch countries from API
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoadingCountries(true);
         
-        // Fetch countries and mappings in parallel
-        const [countries, mappings] = await Promise.all([
-          fetchCountries(),
-          fetchCountryMappings()
-        ]);
+        // Fetch countries
+        const countries = await fetchCountries();
         
         // Create mappings of country names to ISO codes and vice versa
         const nameToCode: Record<string, string> = {};
         const codeToName: Record<string, string> = {};
         
         countries.forEach(country => {
-          nameToCode[country.name] = country.iso_alpha3;
-          codeToName[country.iso_alpha3] = country.name;
+          nameToCode[country.name] = country.iso3;
+          codeToName[country.iso3] = country.name;
         });
         
         setCountryNameToCode(nameToCode);
         setCountryCodeToName(codeToName);
-        setCountryMappings(mappings);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -107,20 +84,8 @@ export default function Home() {
   }, []);
 
   // Memoize the country selection handler
-  const handleCountrySelect = useCallback((countryNameOrCode: string, countryName?: string) => {
-    // If countryName is provided, it means we're getting a country code and name from TradeDeficitMap
-    // Otherwise, we're getting just a country name from WorldMap
-    if (countryName) {
-      setSelectedCountry(countryName);
-    } else {
-      setSelectedCountry(countryNameOrCode);
-    }
-    
-    setExpandedSections(prev => {
-      const newSet = new Set(prev);
-      newSet.add('country');
-      return newSet;
-    });
+  const handleCountrySelect = useCallback((country: { name: string; code: string }) => {
+    setSelectedCountry(country);
   }, []);
 
   // Memoize the country clear handler
@@ -153,10 +118,8 @@ export default function Home() {
 
   // Get the country code for the selected country
   const getCountryCode = useCallback((countryName: string): string | undefined => {
-    // First try to get the code directly
     let code = countryNameToCode[countryName];
     
-    // If not found, try to find a close match
     if (!code) {
       const countryEntries = Object.entries(countryNameToCode);
       const closeMatch = countryEntries.find(([name, _]) => 
@@ -170,18 +133,6 @@ export default function Home() {
     }
     
     return code;
-  }, [countryNameToCode]);
-
-  // Memoize the country data for the map
-  const countryData = useMemo(() => {
-    // Create a mapping of country names to their ISO codes
-    const data: Record<string, string> = {};
-    
-    Object.entries(countryNameToCode).forEach(([name, code]) => {
-      data[name] = code;
-    });
-    
-    return data;
   }, [countryNameToCode]);
 
   // Measure component render time
@@ -228,34 +179,37 @@ export default function Home() {
               />
             </div>
             
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-              <Tabs value={activeMap} onValueChange={(value: string) => setActiveMap(value as 'tariff' | 'deficit')}>
-                <TabsList>
-                  <TabsTrigger value="deficit">US Trade Deficit Map</TabsTrigger>
-                  <TabsTrigger value="tariff">US Tariff Map</TabsTrigger>
-                </TabsList>
-              </Tabs>
-              
-              <div className="p-1">
-                {activeMap === 'tariff' ? (
-                  <div className="animate-slide-up">
-                    <WorldMapComponent
-                      data={countryData}
-                      onCountryClick={handleCountrySelect}
-                      onCountryHover={handleCountryHover}
-                    />
-                  </div>
-                ) : (
-                  <div className="animate-slide-up">
-                    <TradeDeficitMapComponent
-                      countryNameToCode={countryNameToCode}
-                      countryCodeToName={countryCodeToName}
-                      countryMappings={countryMappings}
-                      onCountrySelect={handleCountrySelect}
-                    />
-                  </div>
-                )}
-              </div>
+            {/* Map Type Tabs */}
+            <div className="flex justify-end space-x-2 mb-4">
+              <button
+                onClick={() => setActiveMap('tariff')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeMap === 'tariff'
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Tariff Map
+              </button>
+              <button
+                onClick={() => setActiveMap('deficit')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeMap === 'deficit'
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Deficit Map
+              </button>
+            </div>
+            
+            {/* Map Container */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              {activeMap === 'tariff' ? (
+                <UsTariffMapComponent onCountrySelect={setSelectedCountry} />
+              ) : (
+                <UsDeficitMap onCountrySelect={setSelectedCountry} />
+              )}
             </div>
 
             {/* Country Selection Dropdown - Only visible on mobile */}
@@ -264,29 +218,35 @@ export default function Home() {
                 onCountrySelect={(countryCode) => {
                   const countryName = countryCodeToName[countryCode];
                   if (countryName) {
-                    handleCountrySelect(countryName);
+                    handleCountrySelect({ name: countryName, code: countryNameToCode[countryName] });
                   }
                 }}
               />
             </div>
 
-            {/* Middle Ad - Rectangle */}
-            {/* <div className="w-full flex justify-center my-4">
-              <AdComponent 
-                adSlot="middle-rectangle" 
-                adFormat="rectangle" 
-                className="w-[300px] h-[250px]"
-              />
-            </div> */}
-
             {/* Details Section */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
               <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    {selectedCountry ? `US Trade and Tariff Details With ${selectedCountry.name}` : 'Global Trade Overview'}
+                  </h2>
+                  {selectedCountry && (
+                    <button
+                      onClick={() => setSelectedCountry(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
                 {selectedCountry ? (
                   <CountryDetails
-                    countryName={selectedCountry}
-                    countryCode={getCountryCode(selectedCountry)}
-                    onBack={() => setSelectedCountry(null)}
+                    countryId={parseInt(selectedCountry.code)}
+                    countryName={selectedCountry.name}
+                    onClose={() => setSelectedCountry(null)}
                   />
                 ) : (
                   <GlobalStats />
@@ -325,7 +285,7 @@ export default function Home() {
                 Tracking global trade relationships and tariff impacts in real-time.
               </p>
             </div>
-            <div>
+            <div className="md:text-right">
               <h3 className="text-sm font-medium text-gray-900 mb-3">Data Sources</h3>
               <ul className="space-y-2 text-sm">
                 <li>

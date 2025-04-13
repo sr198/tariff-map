@@ -1,0 +1,998 @@
+[
+  {
+    "iso3_code": "AFG",
+    "name": "Afghanistan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ALB",
+    "name": "Albania",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DZA",
+    "name": "Algeria",
+    "tariff_rate_1": "30%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "AND",
+    "name": "Andorra",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "AGO",
+    "name": "Angola",
+    "tariff_rate_1": "32%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ATG",
+    "name": "Antigua and Barbuda",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ARG",
+    "name": "Argentina",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ARM",
+    "name": "Armenia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ABW",
+    "name": "Aruba",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "AUS",
+    "name": "Australia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "AUT",
+    "name": "Austria",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "AZE",
+    "name": "Azerbaijan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BHR",
+    "name": "Bahrain",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BGD",
+    "name": "Bangladesh",
+    "tariff_rate_1": "37%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BRB",
+    "name": "Barbados",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BEL",
+    "name": "Belgium",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BLZ",
+    "name": "Belize",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BEN",
+    "name": "Benin",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BMU",
+    "name": "Bermuda",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BTN",
+    "name": "Bhutan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BOL",
+    "name": "Bolivia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BWA",
+    "name": "Botswana",
+    "tariff_rate_1": "37%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BRA",
+    "name": "Brazil",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BGR",
+    "name": "Bulgaria",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "BDI",
+    "name": "Burundi",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "KHM",
+    "name": "Cambodia",
+    "tariff_rate_1": "49%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CMR",
+    "name": "Cameroon",
+    "tariff_rate_1": "11%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CAN",
+    "name": "Canada",
+    "tariff_rate_1": "25%",
+    "tariff_rate_2": "25%"
+  },
+  {
+    "iso3_code": "CPV",
+    "name": "Cape Verde",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CAF",
+    "name": "Central African Republic",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TCD",
+    "name": "Chad",
+    "tariff_rate_1": "13%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CHL",
+    "name": "Chile",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CHN",
+    "name": "China",
+    "tariff_rate_1": "54%",
+    "tariff_rate_2": "145%"
+  },
+  {
+    "iso3_code": "COL",
+    "name": "Colombia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "COK",
+    "name": "Cook Islands",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CRI",
+    "name": "Costa Rica",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "HRV",
+    "name": "Croatia",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CYP",
+    "name": "Cyprus",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CZE",
+    "name": "Czech Republic",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DNK",
+    "name": "Denmark",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DJI",
+    "name": "Djibouti",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DMA",
+    "name": "Dominica",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DOM",
+    "name": "Dominican Republic",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TMP",
+    "name": "East Timor",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ECU",
+    "name": "Ecuador",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SLV",
+    "name": "El Salvador",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GNQ",
+    "name": "Equatorial Guinea",
+    "tariff_rate_1": "13%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ERI",
+    "name": "Eritrea",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "EST",
+    "name": "Estonia",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "FJI",
+    "name": "Fiji",
+    "tariff_rate_1": "32%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "FIN",
+    "name": "Finland",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "FRA",
+    "name": "France",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GUF",
+    "name": "French Guiana",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PYF",
+    "name": "French Polynesia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GAB",
+    "name": "Gabon",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GEO",
+    "name": "Georgia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "DEU",
+    "name": "Germany",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GHA",
+    "name": "Ghana",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GIB",
+    "name": "Gibraltar",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GRC",
+    "name": "Greece",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GRD",
+    "name": "Grenada",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GLP",
+    "name": "Guadeloupe",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GTM",
+    "name": "Guatemala",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GIN",
+    "name": "Guinea",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GNB",
+    "name": "Guinea-Bissau",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GUY",
+    "name": "Guyana",
+    "tariff_rate_1": "38%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "HTI",
+    "name": "Haiti",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "HND",
+    "name": "Honduras",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "HUN",
+    "name": "Hungary",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ISL",
+    "name": "Iceland",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "IND",
+    "name": "India",
+    "tariff_rate_1": "26%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "IDN",
+    "name": "Indonesia",
+    "tariff_rate_1": "32%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "IRQ",
+    "name": "Iraq",
+    "tariff_rate_1": "39%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "IRL",
+    "name": "Ireland",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ISR",
+    "name": "Israel",
+    "tariff_rate_1": "17%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ITA",
+    "name": "Italy",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "JAM",
+    "name": "Jamaica",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "JPN",
+    "name": "Japan",
+    "tariff_rate_1": "24%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "JOR",
+    "name": "Jordan",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "KAZ",
+    "name": "Kazakhstan",
+    "tariff_rate_1": "27%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "KEN",
+    "name": "Kenya",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "KIR",
+    "name": "Kiribati",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "KWT",
+    "name": "Kuwait",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LVA",
+    "name": "Latvia",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LBN",
+    "name": "Lebanon",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LSO",
+    "name": "Lesotho",
+    "tariff_rate_1": "50%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LBR",
+    "name": "Liberia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LIE",
+    "name": "Liechtenstein",
+    "tariff_rate_1": "37%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LTU",
+    "name": "Lithuania",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LUX",
+    "name": "Luxembourg",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MDG",
+    "name": "Madagascar",
+    "tariff_rate_1": "47%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MWI",
+    "name": "Malawi",
+    "tariff_rate_1": "17%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MYS",
+    "name": "Malaysia",
+    "tariff_rate_1": "24%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MDV",
+    "name": "Maldives",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MLI",
+    "name": "Mali",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MLT",
+    "name": "Malta",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MHL",
+    "name": "Marshall Islands",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MTQ",
+    "name": "Martinique",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MRT",
+    "name": "Mauritania",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MUS",
+    "name": "Mauritius",
+    "tariff_rate_1": "40%",
+    "tariff_rate_2": "40%"
+  },
+  {
+    "iso3_code": "MEX",
+    "name": "Mexico",
+    "tariff_rate_1": "25%",
+    "tariff_rate_2": "25%"
+  },
+  {
+    "iso3_code": "MCO",
+    "name": "Monaco",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MNG",
+    "name": "Mongolia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MSR",
+    "name": "Montserrat",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MAR",
+    "name": "Morocco",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MOZ",
+    "name": "Mozambique",
+    "tariff_rate_1": "16%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "MMR",
+    "name": "Myanmar",
+    "tariff_rate_1": "44%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NAM",
+    "name": "Namibia",
+    "tariff_rate_1": "21%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NRU",
+    "name": "Nauru",
+    "tariff_rate_1": "30%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NPL",
+    "name": "Nepal",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NLD",
+    "name": "Netherlands",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NZL",
+    "name": "New Zealand",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NIC",
+    "name": "Nicaragua",
+    "tariff_rate_1": "18%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NER",
+    "name": "Niger",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NGA",
+    "name": "Nigeria",
+    "tariff_rate_1": "14%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "NOR",
+    "name": "Norway",
+    "tariff_rate_1": "15%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "OMN",
+    "name": "Oman",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PAK",
+    "name": "Pakistan",
+    "tariff_rate_1": "29%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PAN",
+    "name": "Panama",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PNG",
+    "name": "Papua New Guinea",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PRY",
+    "name": "Paraguay",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PER",
+    "name": "Peru",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PHL",
+    "name": "Philippines",
+    "tariff_rate_1": "17%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "POL",
+    "name": "Poland",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "PRT",
+    "name": "Portugal",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "QAT",
+    "name": "Qatar",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "REU",
+    "name": "Reunion",
+    "tariff_rate_1": "37%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ROM",
+    "name": "Romania",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "RWA",
+    "name": "Rwanda",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "WSM",
+    "name": "Samoa",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SMR",
+    "name": "San Marino",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "STP",
+    "name": "Sao Tome and Principe",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SAU",
+    "name": "Saudi Arabia",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SEN",
+    "name": "Senegal",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SGP",
+    "name": "Singapore",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SVN",
+    "name": "Slovenia",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SLB",
+    "name": "Solomon Islands",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ZAF",
+    "name": "South Africa",
+    "tariff_rate_1": "30%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ESP",
+    "name": "Spain",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LKA",
+    "name": "Sri Lanka",
+    "tariff_rate_1": "44%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SDN",
+    "name": "Sudan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SUR",
+    "name": "Suriname",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SWZ",
+    "name": "Swaziland",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SWE",
+    "name": "Sweden",
+    "tariff_rate_1": "20%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CHE",
+    "name": "Switzerland",
+    "tariff_rate_1": "31%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TWN",
+    "name": "Taiwan",
+    "tariff_rate_1": "32%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TJK",
+    "name": "Tajikistan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "THA",
+    "name": "Thailand",
+    "tariff_rate_1": "36%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TGO",
+    "name": "Togo",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TON",
+    "name": "Tonga",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TTO",
+    "name": "Trinidad and Tobago",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TUN",
+    "name": "Tunisia",
+    "tariff_rate_1": "28%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TUR",
+    "name": "Turkey",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TKM",
+    "name": "Turkmenistan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "TUV",
+    "name": "Tuvalu",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "UGA",
+    "name": "Uganda",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "UKR",
+    "name": "Ukraine",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ARE",
+    "name": "United Arab Emirates",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "GBR",
+    "name": "United Kingdom",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "URY",
+    "name": "Uruguay",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "UZB",
+    "name": "Uzbekistan",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "VUT",
+    "name": "Vanuatu",
+    "tariff_rate_1": "22%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "VEN",
+    "name": "Venezuela",
+    "tariff_rate_1": "15%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "VNM",
+    "name": "Vietnam",
+    "tariff_rate_1": "46%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ZMB",
+    "name": "Zambia",
+    "tariff_rate_1": "17%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "ZWE",
+    "name": "Zimbabwe",
+    "tariff_rate_1": "18%",
+    "tariff_rate_2": "10%"
+  }
+]

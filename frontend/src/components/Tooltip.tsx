@@ -1,55 +1,49 @@
 import React from 'react';
 
 interface TooltipProps {
-  countryName: string;
   data: {
-    trump_claimed_tariff?: number;
-    us_reciprocal_tariff?: number;
-    tradeBalance?: number;
-    partnerStatus?: string;
+    tariff_rate_1?: number;
+    tariff_rate_2?: number;
+    date_1?: string;
+    date_2?: string;
+    deficit?: number | string; // Allow both number and string for deficit
+    country_name?: string;
   };
+  countryName: string;
+  mapType: 'tariff' | 'deficit';
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ countryName, data: countryData }) => {
-  if (!countryData) return null;
+const Tooltip: React.FC<TooltipProps> = ({ data, countryName, mapType }) => {
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value * 1000000000); // Convert billions to actual value
+  };
+
+  const formatDeficit = (value: number) => {
+    const absValue = Math.abs(value);
+    const sign = value > 0 ? 'Surplus' : 'Deficit';
+    const unit = absValue >= 1 ? 'B' : 'M';
+    const displayValue = absValue >= 1 ? absValue : absValue * 1000;
+    return `${sign}: ${displayValue.toFixed(2)}${unit} USD`;
+  };
 
   return (
-    <div
-      className="absolute z-50 bg-white shadow-lg rounded-lg p-2 max-w-[200px] transform -translate-x-1/2 -translate-y-full border border-gray-200"
-    >
-      <div className="font-semibold text-gray-900 text-sm mb-1">{countryName}</div>
-      
-      <div className="space-y-0.5 text-xs">
-        {countryData.trump_claimed_tariff !== undefined && (
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Tariff on US Import:</span>
-            <span className="font-medium whitespace-nowrap">{countryData.trump_claimed_tariff.toFixed(1)}%</span>
-          </div>
-        )}
-        
-        {countryData.us_reciprocal_tariff !== undefined && (
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Reciprocal Tariff:</span>
-            <span className="font-medium whitespace-nowrap">{countryData.us_reciprocal_tariff.toFixed(1)}%</span>
-          </div>
-        )}
-        
-        {countryData.tradeBalance !== undefined && (
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Trade Balance:</span>
-            <span className={`font-medium whitespace-nowrap ${countryData.tradeBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ${countryData.tradeBalance.toFixed(1)}B
-            </span>
-          </div>
-        )}
-        
-        {countryData.partnerStatus && (
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Status:</span>
-            <span className="font-medium whitespace-nowrap">{countryData.partnerStatus}</span>
-          </div>
-        )}
-      </div>
+    <div className="bg-white p-4 rounded-lg shadow-lg">
+      <h3 className="text-sm font-medium text-gray-900 mb-1">{countryName}</h3>
+      {mapType === 'deficit' ? (
+        <p className="text-sm text-gray-600">
+          {data.deficit}
+        </p>
+      ) : (
+        <div className="text-sm text-gray-600">
+          <p>Tariff Rate: {data.tariff_rate_1}%</p>
+          <p className="text-xs text-gray-500">As of {data.date_1}</p>
+        </div>
+      )}
     </div>
   );
 };

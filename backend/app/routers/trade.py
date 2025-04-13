@@ -8,125 +8,38 @@ from ..utils.country_reference import (
     get_name_by_id,
     get_trade_region_by_id
 )
-from ..cache import get, set, clear
+from ..cache import cache
 import json
 from datetime import datetime
 from pathlib import Path
-from pydantic import BaseModel
-from functools import lru_cache
 
 router = APIRouter(
     prefix="/api/trade",
     tags=["trade"]
 )
 
-@lru_cache(maxsize=100)
-def get_country_id_cache(iso3_code: str) -> Optional[int]:
-    supabase = get_supabase()
-    result = supabase.table('countries').select('id').eq('iso3_code', iso3_code).single().execute()
-    return result.data['id'] if result.data else None
-
-@router.get("/country/{iso3_code}")
-async def get_country_trade_data(iso3_code: str):
-    try:
-        # Try to get from cache first
-        cache_key = f"country_trade:{iso3_code}"
-        cached_data = get(cache_key, max_age_hours=24)  # Cache for 24 hours
-        if cached_data:
-            return cached_data
-        
-        supabase = get_supabase()
-        
-        # Get country ID with caching
-        country_id = get_country_id_cache(iso3_code)
-        if not country_id:
-            raise HTTPException(status_code=404, detail="Country not found")
-        
-        # Get trade summary with optimized query
-        trade_summary = (
-            supabase.table('view_trade_summary')
-            .select('year, export, import_, trade_deficit')
-            .eq('reporter_code', country_id)
-            .eq('partner_code', 840)  # US code
-            .order('year', desc=True)
-            .execute()
-        )
-        
-        # Get tariff data with optimized query
-        tariff_data = (
-            supabase.table('view_tariff_summary')
-            .select('year, tariff_type, simple_average, weighted_average')
-            .eq('reporter_code', country_id)
-            .eq('partner_code', 840)  # US code
-            .eq('tariff_type', 'AHS')
-            .order('year', desc=True)
-            .limit(1)
-            .execute()
-        )
-        
-        # Get Trump tariff data with optimized query
-        trump_tariff_data = (
-            supabase.table('us_tariff_summary')
-            .select('tariff_rate_1, tariff_rate_2')
-            .eq('iso3_code', iso3_code)
-            .single()
-            .execute()
-        )
-        
-        # Format response
-        response = {
-            "summary": trade_summary.data,
-            "tariffs_on_us_imports": tariff_data.data[0] if tariff_data.data else None,
-            "us_tariffs_on_imports": None,  # This would need to be implemented
-            "trump_tariffs": format_trump_tariffs(trump_tariff_data.data) if trump_tariff_data.data else None
-        }
-        
-        # Cache the response
-        set(cache_key, response)
-        
-        return response
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Cache the tariff commentary file
-@lru_cache(maxsize=1)
-def load_tariff_commentary():
-    with open('data/us_tariff_commentary.json', 'r') as f:
-        return json.load(f)
-
-def format_trump_tariffs(trump_tariff_data):
-    tariff_commentary = load_tariff_commentary()
-    trump_tariff_entries = []
+def load_trump_tariffs() -> List[Dict[str, Any]]:
+    """Load Trump tariff data from JSON file"""
+    # Try to get from cache first
+    cache_key = "trump_tariffs"
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return cached_data
     
-    if trump_tariff_data:
-        if trump_tariff_data.get('tariff_rate_1'):
-            trump_tariff_entries.append({
-                "rate": float(trump_tariff_data['tariff_rate_1'].strip('%')),
-                "date": "2025-04-02",
-                "description": tariff_commentary.get('tariff_rate_1', 'First Trump tariff rate')
-            })
-        if trump_tariff_data.get('tariff_rate_2'):
-            trump_tariff_entries.append({
-                "rate": float(trump_tariff_data['tariff_rate_2'].strip('%')),
-                "date": "2025-04-09",
-                "description": tariff_commentary.get('tariff_rate_2', 'Second Trump tariff rate')
-            })
-    
-    return trump_tariff_entries
-
-@router.post("/cache/clear")
-async def clear_cache():
-    """Clear all cached data"""
-    clear()
-    return {"message": "Cache cleared successfully"}
+    data_path = Path(__file__).parent.parent.parent / 'data' / 'us_tariff_full_summary.json'
+    with open(data_path, 'r') as f:
+        data = json.load(f)
+        
+    # Cache the data with a long TTL (30 days) since it rarely changes
+    cache.set(cache_key, data, ttl_seconds=86400 * 30)
+    return data
 
 @router.get("/countries", response_model=List[Country])
 async def get_countries():
     """Get list of all countries"""
     # Try to get from cache first
     cache_key = "countries_list"
-    cached_data = get(cache_key)
+    cached_data = cache.get(cache_key)
     if cached_data:
         return cached_data
     
@@ -136,7 +49,7 @@ async def get_countries():
         countries_list = list(countries.values())
         
         # Store in cache with a long TTL (30 days) since country list rarely changes
-        set(cache_key, countries_list, ttl_seconds=86400 * 30)
+        cache.set(cache_key, countries_list, ttl_seconds=86400 * 30)
         
         return countries_list
     except Exception as e:
@@ -147,7 +60,7 @@ async def get_country_mappings(supabase=Depends(get_supabase)):
     """Get mappings between different ISO code variants"""
     # Try to get from cache first
     cache_key = "country_mappings"
-    cached_data = get(cache_key)
+    cached_data = cache.get(cache_key)
     if cached_data:
         return cached_data
     
@@ -163,7 +76,7 @@ async def get_country_mappings(supabase=Depends(get_supabase)):
             mappings[item['alternative_code']] = item['iso_alpha3']
         
         # Store in cache with a long TTL (30 days) since mappings rarely change
-        set(cache_key, mappings, ttl_seconds=86400 * 30)
+        cache.set(cache_key, mappings, ttl_seconds=86400 * 30)
         
         return mappings
     except Exception as e:
@@ -182,7 +95,7 @@ async def get_trade_summary(
     cache_key = f"trade_summary:{reporter_id}:{partner_id}:{start_year}:{end_year}"
     
     # Try to get from cache first
-    cached_data = get(cache_key)
+    cached_data = cache.get(cache_key)
     if cached_data:
         return cached_data
     
@@ -222,18 +135,27 @@ async def get_trade_summary(
         }
         
         # Store in cache with a long TTL (7 days) since trade data rarely changes
-        set(cache_key, result, ttl_seconds=86400 * 7)
+        cache.set(cache_key, result, ttl_seconds=86400 * 7)
         
         return result
     except Exception as e:
         print(f"Debug - Error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching trade summary: {str(e)}")
 
+@router.post("/cache/clear")
+async def clear_cache():
+    """Clear the cache (admin endpoint)"""
+    try:
+        cache.clear()
+        return {"message": "Cache cleared successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error clearing cache: {str(e)}")
+
 @router.get("/cache/stats")
 async def get_cache_stats():
     """Get cache statistics (admin endpoint)"""
     try:
-        stats = get_stats()
+        stats = cache.get_stats()
         return stats
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting cache stats: {str(e)}")
@@ -242,7 +164,7 @@ async def get_cache_stats():
 async def get_cache_keys():
     """Get all cache keys (admin endpoint)"""
     try:
-        keys = get_keys()
+        keys = cache.get_keys()
         return {"keys": keys}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting cache keys: {str(e)}")
@@ -258,7 +180,7 @@ async def get_trade_deficit_map(
     cache_key = f"trade_deficit_map:{reporter_id}:{year if year else 'latest'}"
     
     # Try to get from cache first
-    cached_data = get(cache_key)
+    cached_data = cache.get(cache_key)
     if cached_data:
         return cached_data
     
@@ -272,7 +194,7 @@ async def get_trade_deficit_map(
         if year is None:
             # Try to get the latest year from cache
             latest_year_cache_key = f"latest_year:{reporter_iso3}"
-            cached_year = get(latest_year_cache_key)
+            cached_year = cache.get(latest_year_cache_key)
             
             if cached_year:
                 year = cached_year
@@ -289,7 +211,7 @@ async def get_trade_deficit_map(
                 
                 year = year_response.data[0]['year']
                 # Cache the latest year for 30 days
-                set(latest_year_cache_key, year, ttl_seconds=86400 * 30)
+                cache.set(latest_year_cache_key, year, ttl_seconds=86400 * 30)
         
         # Get trade deficits for the specified year
         response = supabase.table('vw_trade_deficits') \
@@ -329,7 +251,7 @@ async def get_trade_deficit_map(
         }
         
         # Store final result in cache with a long TTL (7 days)
-        set(cache_key, result, ttl_seconds=86400 * 7)
+        cache.set(cache_key, result, ttl_seconds=86400 * 7)
         
         return result
     except Exception as e:
@@ -350,7 +272,7 @@ async def get_country_details(
 
         # Try to get from cache first
         cache_key = f"country_details:{country_id}"
-        cached_data = get(cache_key)
+        cached_data = cache.get(cache_key)
         if cached_data:
             return cached_data
 
@@ -443,7 +365,7 @@ async def get_country_details(
         )
         
         # Cache the final result with a shorter TTL (1 day) since WTO data might update
-        set(cache_key, result, ttl_seconds=86400)
+        cache.set(cache_key, result, ttl_seconds=86400)
         
         return result
     except Exception as e:

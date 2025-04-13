@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, memo, useState } from 'react';
+import React, { useMemo, useCallback, memo, useState, useEffect } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -85,6 +85,16 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
   const [activeTab, setActiveTab] = useState(1);
   const { tariffData, loading, error } = useUsTariffData();
 
+  // Add scroll event listener to hide tooltip
+  useEffect(() => {
+    const handleScroll = () => {
+      setTooltipData(null);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Format date for display
   const formatDateForDisplay = useCallback((dateString: string) => {
     const date = new Date(dateString);
@@ -150,6 +160,33 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
     setTooltipData(null);
   }, []);
 
+  // Handle touch events
+  const handleTouchStart = useCallback((geo: any, event: React.TouchEvent) => {
+    const countryId = geo?.id;
+    const countryName = geo?.properties?.name;
+    
+    if (!countryId || !countryName) return;
+    
+    const countryData = tariffData[countryId];
+    if (countryData) {
+      setTooltipData({
+        countryName,
+        data: {
+          tariff_rate_1: countryData.tariff_rate_1,
+          tariff_rate_2: countryData.tariff_rate_2,
+          date_1: countryData.date_1,
+          date_2: countryData.date_2
+        },
+        x: event.touches[0].clientX,
+        y: event.touches[0].clientY,
+      });
+    }
+  }, [tariffData]);
+
+  const handleTouchEnd = useCallback(() => {
+    setTooltipData(null);
+  }, []);
+
   // Zoom handlers
   const handleZoomIn = useCallback(() => {
     setZoom(prev => Math.min(prev * 1.5, 4));
@@ -197,6 +234,8 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
             geography={geo}
             onMouseEnter={(e) => handleMouseEnter(geo, e as any)}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={(e) => handleTouchStart(geo, e as any)}
+            onTouchEnd={handleTouchEnd}
             onClick={() => handleCountryClick(geo)}
             style={{
               default: {
@@ -221,7 +260,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
           />
         );
       });
-  }, [tariffData, colorScale, activeTab, handleMouseEnter, handleMouseLeave, handleCountryClick]);
+  }, [tariffData, colorScale, activeTab, handleMouseEnter, handleMouseLeave, handleTouchStart, handleTouchEnd, handleCountryClick]);
 
   if (loading) {
     return (

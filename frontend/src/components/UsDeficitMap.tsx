@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, memo, useState } from 'react';
+import React, { useMemo, useCallback, memo, useState, useEffect } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -65,6 +65,16 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
     return () => {
       window.removeEventListener('resize', checkMobile);
     };
+  }, []);
+
+  // Add scroll event listener to hide tooltip
+  useEffect(() => {
+    const handleScroll = () => {
+      setTooltipData(null);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Transform deficit data into a map for easier lookup
@@ -172,6 +182,39 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
     });
   }, [onCountrySelect]);
 
+  // Handle touch events
+  const handleTouchStart = useCallback((geo: any, event: React.TouchEvent) => {
+    const countryId = geo?.id;
+    const countryName = geo?.properties?.name;
+    
+    if (!countryId || !countryName) return;
+    
+    const countryData = deficitMap[countryId];
+    if (countryData) {
+      const rawValue = countryData.deficit;
+      const absValue = Math.abs(rawValue);
+      const displayValue = absValue >= 1000000 
+        ? `${(absValue / 1000000).toFixed(2)}B` 
+        : `${(absValue / 1000).toFixed(2)}M`;
+      const type = rawValue > 0 ? 'Surplus' : 'Deficit';
+      
+      setTooltipData({
+        data: {
+          country_id: countryId,
+          country_code: countryId,
+          country_name: countryName,
+          deficit_thousands: rawValue
+        },
+        x: event.touches[0].clientX,
+        y: event.touches[0].clientY
+      });
+    }
+  }, [deficitMap]);
+
+  const handleTouchEnd = useCallback(() => {
+    setTooltipData(null);
+  }, []);
+
   // Memoize the geographies rendering
   const renderGeographies = useCallback(({ geographies }: { geographies: any[] }) => {
     return geographies
@@ -201,6 +244,8 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
             geography={geo}
             onMouseEnter={(e) => handleMouseEnter(geo, e as any)}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={(e) => handleTouchStart(geo, e as any)}
+            onTouchEnd={handleTouchEnd}
             onClick={() => handleCountryClick(geo)}
             style={{
               default: {
@@ -225,7 +270,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
           />
         );
       });
-  }, [deficitMap, colorScale, handleMouseEnter, handleMouseLeave, handleCountryClick]);
+  }, [deficitMap, colorScale, handleMouseEnter, handleMouseLeave, handleTouchStart, handleTouchEnd, handleCountryClick]);
 
   if (loading) {
     return (

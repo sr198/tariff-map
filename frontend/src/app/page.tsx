@@ -170,15 +170,6 @@ export default function Home() {
       <ErrorBoundary>
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <div className="flex flex-col space-y-6 w-full">
-            {/* Top Ad - Horizontal Banner */}
-            <div className="w-full flex justify-center my-4">
-              <AdComponent 
-                adSlot="top-banner" 
-                adFormat="horizontal" 
-                className="w-full max-w-[728px] h-[90px]"
-              />
-            </div>
-            
             {/* Map Type Tabs */}
             <div className="flex justify-end space-x-2 mb-4">
               <button
@@ -212,15 +203,12 @@ export default function Home() {
               )}
             </div>
 
-            {/* Country Selection Dropdown - Only visible on mobile */}
-            <div className="md:hidden">
-              <CountryDropdown 
-                onCountrySelect={(countryCode) => {
-                  const countryName = countryCodeToName[countryCode];
-                  if (countryName) {
-                    handleCountrySelect({ name: countryName, code: countryNameToCode[countryName] });
-                  }
-                }}
+            {/* Top Ad - Horizontal Banner */}
+            <div className="w-full flex justify-center my-4">
+              <AdComponent 
+                adSlot="top-banner" 
+                adFormat="horizontal" 
+                className="w-full max-w-[728px] h-[90px]"
               />
             </div>
 

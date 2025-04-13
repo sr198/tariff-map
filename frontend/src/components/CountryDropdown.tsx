@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchCountries, Country } from '@/services/tradeService';
 
 interface CountryDropdownProps {
-  onCountrySelect: (countryCode: string) => void;
+  onCountrySelect: (countryId: number) => void;
   className?: string;
 }
 
@@ -30,9 +30,9 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, clas
   }, []);
 
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const countryCode = event.target.value;
-    setSelectedCountry(countryCode);
-    onCountrySelect(countryCode);
+    const countryId = parseInt(event.target.value);
+    setSelectedCountry(event.target.value);
+    onCountrySelect(countryId);
   };
 
   if (isLoading) {
@@ -62,7 +62,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({ onCountrySelect, clas
       >
         <option value="">Select a country</option>
         {countries.map((country) => (
-          <option key={country.iso3_code} value={country.iso3_code}>
+          <option key={country.id} value={country.id}>
             {country.name}
           </option>
         ))}

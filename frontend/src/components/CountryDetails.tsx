@@ -233,32 +233,61 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
     <div className="space-y-8">
       {/* Trump Tariffs Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Trump Tariffs</h2>
+        <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
+        <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {countryName}</p>
         <div className="bg-white rounded-lg shadow p-4">
           {countryDetails?.trump_tariffs && countryDetails.trump_tariffs.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {[...countryDetails.trump_tariffs]
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((tariff, index) => (
-                <div key={index} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-medium mb-1">
-                        Trump Tariff {index + 1}
+                .map((tariff, index) => {
+                  // Calculate gradient color based on tariff rate
+                  const rate = tariff.rate;
+                  // Normalize to 0-1 range using 10% as minimum and 150% as maximum
+                  const minRate = 10;
+                  const maxRate = 150;
+                  const normalizedRate = Math.min(Math.max((rate - minRate) / (maxRate - minRate), 0), 1);
+                  
+                  // Create a gradient from orange (rgb(255, 165, 0)) to red (rgb(255, 0, 0))
+                  const red = 255;
+                  const green = Math.floor(165 * (1 - normalizedRate));
+                  const blue = 0;
+                  const color = `rgb(${red}, ${green}, ${blue})`;
+                  
+                  return (
+                    <div key={index} className="relative pl-12">
+                      {/* Timeline line */}
+                      {index !== (countryDetails.trump_tariffs?.length ?? 0) - 1 && (
+                        <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
+                      )}
+                      {/* Timeline dot with calendar icon */}
+                      <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      {/* Timeline content */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900">{tariff.date}</span>
+                          <span className="text-2xl font-bold" style={{ color }}>
+                            {tariff.rate.toFixed(1)}%
+                          </span>
+                        </div>
                         {tariff.description && (
-                          <span className="text-sm text-gray-500 ml-2">({tariff.description})</span>
+                          <div className="flex items-center gap-2 mt-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <p className="text-sm text-gray-500">
+                              {tariff.description}
+                            </p>
+                          </div>
                         )}
-                      </h3>
-                      <p className="text-2xl font-bold text-red-600">
-                        {tariff.rate.toFixed(1)}%
-                      </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      {tariff.date}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           ) : (
             <p className="text-gray-500">No Trump tariff data available</p>
@@ -268,36 +297,39 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
 
       {/* WTO Tariffs Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">WTO Tariffs</h2>
+        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {countryDetails?.tariffs_on_us_imports?.year || countryDetails?.us_tariffs_on_imports?.year || '2023'})</h2>
+        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {countryName}</p>
         {countryDetails && (countryDetails.tariffs_on_us_imports || countryDetails.us_tariffs_on_imports) && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tariff Details</h3>
-            <div className="text-xs text-gray-500 mb-4">*Based on WTO data from {countryDetails.tariffs_on_us_imports?.year || countryDetails.us_tariffs_on_imports?.year}</div>
-            
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 relative">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {countryDetails.tariffs_on_us_imports && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Tariffs Imposed by {countryName} on US Imports</div>
-                  <div className="text-2xl font-semibold text-red-600">
+                <div className="bg-[#EAF4FF] rounded-lg p-4">
+                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {countryName} on US Imports</div>
+                  <div className="text-2xl font-semibold text-navy-900">
                     {countryDetails.tariffs_on_us_imports.simple_average.toFixed(1)}%
                   </div>
-                  <div className="text-sm text-gray-500 mt-2">
+                  <div className="text-sm text-navy-600 mt-2">
                     Weighted Average: {countryDetails.tariffs_on_us_imports.weighted_average.toFixed(1)}%
                   </div>
                 </div>
               )}
               
               {countryDetails.us_tariffs_on_imports && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">US Tariffs on {countryName} Imports</div>
-                  <div className="text-2xl font-semibold text-emerald-600">
+                <div className="bg-[#EAF4FF] rounded-lg p-4">
+                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {countryName} Imports</div>
+                  <div className="text-2xl font-semibold text-navy-900">
                     {countryDetails.us_tariffs_on_imports.simple_average.toFixed(1)}%
                   </div>
-                  <div className="text-sm text-gray-500 mt-2">
+                  <div className="text-sm text-navy-600 mt-2">
                     Weighted Average: {countryDetails.us_tariffs_on_imports.weighted_average.toFixed(1)}%
                   </div>
                 </div>
               )}
+            </div>
+            <div className="absolute bottom-2 right-2 text-[10px] text-gray-500 text-right">
+              Based on WTO's {countryDetails.tariffs_on_us_imports?.year || countryDetails.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
+              <br />
+              <span className="italic">(Note: This may differ from claims made by governments.)</span>
             </div>
           </div>
         )}

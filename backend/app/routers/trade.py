@@ -292,17 +292,21 @@ async def get_country_details(
         # Format Trump tariff data
         trump_tariff_entries = []
         if trump_tariff_data:
+            # Load tariff commentary
+            with open('data/us_tariff_commentary.json', 'r') as f:
+                tariff_commentary = json.load(f)
+            
             if trump_tariff_data.get('tariff_rate_1'):
                 trump_tariff_entries.append(TrumpTariffEntry(
                     rate=float(trump_tariff_data['tariff_rate_1'].strip('%')),
                     date="2025-04-02",
-                    description="First Trump tariff rate"
+                    description=tariff_commentary.get('tariff_rate_1', 'First Trump tariff rate')
                 ))
             if trump_tariff_data.get('tariff_rate_2'):
                 trump_tariff_entries.append(TrumpTariffEntry(
                     rate=float(trump_tariff_data['tariff_rate_2'].strip('%')),
                     date="2025-04-09",
-                    description="Second Trump tariff rate"
+                    description=tariff_commentary.get('tariff_rate_2', 'Second Trump tariff rate')
                 ))
 
         # Get WTO tariff data

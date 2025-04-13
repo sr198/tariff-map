@@ -104,6 +104,32 @@ interface DeficitMapApiResponse {
   }>;
 }
 
+export interface TariffRanking {
+  country_id: number;
+  country_name: string;
+  country_code: string;
+  total_trade: number;
+  tariff_on_us: number | null;
+  us_tariff: number | null;
+}
+
+export interface TariffRankingsResponse {
+  partners: TariffRanking[];
+}
+
+export interface DeficitRanking {
+  country_id: number;
+  country_name: string;
+  country_code: string;
+  exports: number;
+  imports: number;
+  deficit: number;
+}
+
+export interface DeficitRankingsResponse {
+  rankings: DeficitRanking[];
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 /**
@@ -256,6 +282,38 @@ export const fetchCountryDetails = async (countryId: number): Promise<Country> =
     return response.data;
   } catch (error) {
     console.error('Error fetching country details:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch tariff rankings between US and its top trading partners
+ * @returns Tariff rankings response
+ */
+export const fetchTariffRankings = async (): Promise<TariffRankingsResponse> => {
+  try {
+    const response = await axios.get<TariffRankingsResponse>(
+      `${API_BASE_URL}/api/tariffs/rankings`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tariff rankings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch top countries with highest trade deficit with US
+ * @returns Deficit rankings response
+ */
+export const fetchDeficitRankings = async (): Promise<DeficitRankingsResponse> => {
+  try {
+    const response = await axios.get<DeficitRankingsResponse>(
+      `${API_BASE_URL}/api/trade/deficit-rankings`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching deficit rankings:', error);
     throw error;
   }
 }; 

@@ -12,6 +12,8 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
+import { useParams } from 'react-router-dom';
+import LoadingSpinner from './LoadingSpinner';
 
 ChartJS.register(
   CategoryScale,
@@ -27,18 +29,15 @@ ChartJS.register(
 type TimePeriod = '5Y' | '10Y' | 'ALL';
 
 interface CountryDetailsProps {
-  countryId: number;
-  countryName: string;
-  onClose: () => void;
+  countryId?: number;
+  countryName?: string;
+  onClose?: () => void;
 }
 
-const CountryDetails: React.FC<CountryDetailsProps> = ({
-  countryId,
-  countryName,
-  onClose,
-}) => {
+const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryId, countryName: propCountryName, onClose }) => {
+  const { countryId: urlCountryId } = useParams<{ countryId: string }>();
   const [tradeData, setTradeData] = useState<TradeSummaryResponse | null>(null);
-  const [countryDetails, setCountryDetails] = useState<Country | null>(null);
+  const [country, setCountry] = useState<Country | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('5Y');
@@ -47,23 +46,33 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Using US as the reporter country (ID: 840)
+        setError(null);
+        
+        // Use prop countryId if available, otherwise try to parse from URL
+        const id = propCountryId || (urlCountryId ? parseInt(urlCountryId, 10) : null);
+        
+        if (!id || isNaN(id)) {
+          setError('No valid country ID provided');
+          setLoading(false);
+          return;
+        }
+
         const [tradeData, details] = await Promise.all([
-          fetchTradeSummary(840, countryId),
-          fetchCountryDetails(countryId)
+          fetchTradeSummary(840, id),
+          fetchCountryDetails(id)
         ]);
         setTradeData(tradeData);
-        setCountryDetails(details);
+        setCountry(details);
       } catch (err) {
-        setError('Failed to fetch data');
-        console.error('Error fetching data:', err);
+        setError('Failed to load country details');
+        console.error('Error fetching country details:', err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [countryId]);
+  }, [propCountryId, urlCountryId]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -164,7 +173,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       },
       title: {
         display: true,
-        text: `US Trade with ${countryName}`,
+        text: `US Trade with ${propCountryName || country?.name || 'Unknown Country'}`,
         font: {
           size: 16,
           weight: 'bold' as const,
@@ -203,11 +212,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
     },
   };
 
-  if (loading) return (
-    <div className="p-4 flex items-center justify-center h-64">
-      <div className="text-gray-500">Loading trade data...</div>
-    </div>
-  );
+  if (loading) return <LoadingSpinner message="Loading country details..." />;
   
   if (error) return (
     <div className="p-4">
@@ -223,7 +228,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
   
   if (!tradeData || !tradeData.summary.length) return (
     <div className="p-4">
-      <div className="text-gray-500 mb-4">No trade data available for {countryName}</div>
+      <div className="text-gray-500 mb-4">No trade data available for {propCountryName || country?.name || 'Unknown Country'}</div>
       <button
         onClick={onClose}
         className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
@@ -238,11 +243,11 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       {/* Trump Tariffs Section */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
-        <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {countryName}</p>
+        <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
         <div className="bg-white rounded-lg shadow p-4">
-          {countryDetails?.trump_tariffs && countryDetails.trump_tariffs.length > 0 ? (
+          {country?.trump_tariffs && country.trump_tariffs.length > 0 ? (
             <div className="space-y-6">
-              {[...countryDetails.trump_tariffs]
+              {[...country.trump_tariffs]
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((tariff, index) => {
                   // Calculate gradient color based on tariff rate
@@ -261,7 +266,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
                   return (
                     <div key={index} className="relative pl-12">
                       {/* Timeline line */}
-                      {index !== (countryDetails.trump_tariffs?.length ?? 0) - 1 && (
+                      {index !== (country.trump_tariffs?.length ?? 0) - 1 && (
                         <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
                       )}
                       {/* Timeline dot with calendar icon */}
@@ -301,37 +306,37 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
 
       {/* WTO Tariffs Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {countryDetails?.tariffs_on_us_imports?.year || countryDetails?.us_tariffs_on_imports?.year || '2023'})</h2>
-        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {countryName}</p>
-        {countryDetails && (countryDetails.tariffs_on_us_imports || countryDetails.us_tariffs_on_imports) && (
+        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
+        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
+        {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {countryDetails.tariffs_on_us_imports && (
+              {country.tariffs_on_us_imports && (
                 <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {countryName} on US Imports</div>
+                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {propCountryName || country?.name || 'Unknown Country'} on US Imports</div>
                   <div className="text-2xl font-semibold text-navy-900">
-                    {countryDetails.tariffs_on_us_imports.simple_average.toFixed(1)}%
+                    {country.tariffs_on_us_imports.simple_average.toFixed(1)}%
                   </div>
                   <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {countryDetails.tariffs_on_us_imports.weighted_average.toFixed(1)}%
+                    Weighted Average: {country.tariffs_on_us_imports.weighted_average.toFixed(1)}%
                   </div>
                 </div>
               )}
               
-              {countryDetails.us_tariffs_on_imports && (
+              {country.us_tariffs_on_imports && (
                 <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {countryName} Imports</div>
+                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {propCountryName || country?.name || 'Unknown Country'} Imports</div>
                   <div className="text-2xl font-semibold text-navy-900">
-                    {countryDetails.us_tariffs_on_imports.simple_average.toFixed(1)}%
+                    {country.us_tariffs_on_imports.simple_average.toFixed(1)}%
                   </div>
                   <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {countryDetails.us_tariffs_on_imports.weighted_average.toFixed(1)}%
+                    Weighted Average: {country.us_tariffs_on_imports.weighted_average.toFixed(1)}%
                   </div>
                 </div>
               )}
             </div>
             <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
-              Based on WTO's {countryDetails.tariffs_on_us_imports?.year || countryDetails.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
+              Based on WTO's {country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
               <br />
               <span className="italic">(Note: This may differ from claims made by governments.)</span>
             </div>
@@ -343,12 +348,12 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       {latestData && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-1 text-navy-900">Trade Details</h2>
-          <p className="text-sm text-gray-600 mb-4">Latest trade statistics between the US and {countryName}</p>
+          <p className="text-sm text-gray-600 mb-4">Latest trade statistics between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               
               <div className="bg-[#EAF4FF] rounded-lg p-4">
-                <div className="text-sm text-navy-700 mb-1">Total US Export to {countryName}</div>
+                <div className="text-sm text-navy-700 mb-1">Total US Export to {propCountryName || country?.name || 'Unknown Country'}</div>
                 <div className="text-2xl font-semibold text-navy-900">
                   ${formatLargeNumber(latestData.export)}
                 </div>
@@ -358,7 +363,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
               </div>
 
               <div className="bg-[#EAF4FF] rounded-lg p-4">
-                <div className="text-sm text-navy-700 mb-1">Total US Import from {countryName}</div>
+                <div className="text-sm text-navy-700 mb-1">Total US Import from {propCountryName || country?.name || 'Unknown Country'}</div>
                 <div className="text-2xl font-semibold text-navy-900">
                   ${formatLargeNumber(latestData.import_)}
                 </div>
@@ -370,7 +375,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
               
               
               <div className="bg-[#EAF4FF] rounded-lg p-4">
-                <div className="text-sm text-navy-700 mb-1">US Trade Balance with {countryName}</div>
+                <div className="text-sm text-navy-700 mb-1">US Trade Balance with {propCountryName || country?.name || 'Unknown Country'}</div>
                 <div className={`text-2xl font-semibold ${latestData.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
                   ${formatLargeNumber(latestData.trade_deficit)}
                 </div>

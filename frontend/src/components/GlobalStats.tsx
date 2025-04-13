@@ -10,8 +10,10 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { fetchTradeSummary } from '../services/tradeService';
-import type { TradeSummary } from '../services/tradeService';
+import { fetchTradeSummary, fetchDeficitRankings } from '../services/tradeService';
+import type { TradeSummary, DeficitRanking } from '../services/tradeService';
+import axios from 'axios';
+import LoadingSpinner from './LoadingSpinner';
 
 ChartJS.register(
   CategoryScale,
@@ -23,19 +25,31 @@ ChartJS.register(
   Legend
 );
 
+interface TrumpTariffTimelineEntry {
+  date: string;
+  commentary: string;
+}
+
 interface GlobalStatsProps {}
 
 const GlobalStats: React.FC<GlobalStatsProps> = () => {
   const [tradeData, setTradeData] = useState<TradeSummary[]>([]);
+  const [deficitRankings, setDeficitRankings] = useState<DeficitRanking[]>([]);
+  const [tariffTimeline, setTariffTimeline] = useState<TrumpTariffTimelineEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Use US (840) as reporter and World (0) as partner
-        const response = await fetchTradeSummary(840, 0);
-        setTradeData(response.summary);
+        const [tradeResponse, deficitResponse, timelineResponse] = await Promise.all([
+          fetchTradeSummary(840, 0),
+          fetchDeficitRankings(),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/trade/trump-tariff-timeline`)
+        ]);
+        setTradeData(tradeResponse.summary);
+        setDeficitRankings(deficitResponse.rankings);
+        setTariffTimeline(timelineResponse.data.timeline);
         setLoading(false);
       } catch (err) {
         setError('Failed to load trade data');
@@ -222,7 +236,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     },
   };
 
-  if (loading) return <div>Loading trade statistics...</div>;
+  if (loading) return <LoadingSpinner message="Loading trade data..." />;
   if (error) return <div className="text-red-600">{error}</div>;
 
   const latestData = tradeData[tradeData.length - 1];
@@ -235,8 +249,31 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
     }).format(value * 1000); // Multiply by 1000 since values are in thousands
   };
 
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="space-y-8">
+      {/* Trump Tariff Timeline Section */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">Trump-Era Tariff Timeline</h3>
+        <div className="space-y-6">
+          {tariffTimeline.map((entry, index) => (
+            <div key={index} className="relative pl-8 pb-6 border-l-2 border-gray-200">
+              <div className="absolute left-[-9px] top-0 w-4 h-4 bg-orange-500 rounded-full"></div>
+              <div className="text-sm font-medium text-gray-900">{formatDate(entry.date)}</div>
+              <div className="mt-1 text-sm text-gray-600">{entry.commentary}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* US Global Trade Overview Section */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">US Global Trade Overview</h3>
         
@@ -249,17 +286,15 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
             </div>
             <div className="text-xs text-gray-500 mt-2">As of {latestData.year}</div>
           </div>
-          
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="text-sm text-gray-600 mb-1">Total US Imports</div>
-            <div className="text-2xl font-semibold text-emerald-600">
+            <div className="text-2xl font-semibold text-green-600">
               {formatLargeNumber(latestData.import_)}
             </div>
             <div className="text-xs text-gray-500 mt-2">As of {latestData.year}</div>
           </div>
-          
           <div className="bg-gray-50 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">US Trade Deficit</div>
+            <div className="text-sm text-gray-600 mb-1">Trade Deficit</div>
             <div className="text-2xl font-semibold text-red-600">
               {formatLargeNumber(Math.abs(latestData.trade_deficit))}
             </div>
@@ -267,11 +302,44 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
           </div>
         </div>
 
-        <div className="h-[400px]">
+        {/* Trade Flow Chart */}
+        <div className="h-96 mb-8">
           <Line data={combinedData} options={combinedChartOptions} />
         </div>
-        <div className="mt-4 text-sm text-gray-500">
-          <p>The trade deficit (red dashed line) shows the difference between imports and exports. A rising deficit indicates imports are growing faster than exports.</p>
+      </div>
+
+      {/* Deficit Rankings Section */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">Top Countries with Trade Deficit</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US Exports</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US Imports</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trade Deficit</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {deficitRankings.map((country) => (
+                <tr key={country.country_id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {country.country_name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatLargeNumber(country.exports)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatLargeNumber(country.imports)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                    {formatLargeNumber(Math.abs(country.deficit))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

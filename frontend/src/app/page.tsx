@@ -91,10 +91,9 @@ export default function Home() {
                 className="h-8 w-8"
               />
               <div>
-                <h1 className="text-lg font-semibold tracking-tight text-gray-900 font-display">
+                <h1 className="text-2xl font-semibold tracking-tight text-gray-900 font-display">
                   US Tariff and Trade Lens
                 </h1>
-                <p className='text-sm text-gray-500'>Tracking US trade and tariff relations across the world in real-time.</p>
               </div>
             </div>
 

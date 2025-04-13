@@ -11,6 +11,7 @@ from ..utils.country_reference import (
     get_trade_region_by_id,
     load_country_reference
 )
+from ..utils.json_cache import json_cache
 
 router = APIRouter(
     prefix="/api/tariffs",
@@ -308,9 +309,8 @@ async def get_us_tariff_map():
     Returns tariff rates for all countries with two dates
     """
     try:
-        # Read the JSON file
-        with open("data/us_tariff_full_summary.json", "r") as f:
-            tariff_data = json.load(f)
+        # Get tariff data from cache
+        tariff_data = json_cache.get_trump_tariffs()
         
         # Format the response
         return {
@@ -328,4 +328,67 @@ async def get_us_tariff_map():
             ]
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching US tariff map data: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Error fetching US tariff map data: {str(e)}")
+
+@router.get("/rankings")
+async def get_tariff_rankings(supabase: Client = Depends(get_supabase)):
+    """
+    Get tariff rates between US and its top trading partners
+    """
+    try:
+        # First get the top 5 trading partners by total trade volume
+        top_partners_query = (
+            supabase.table('view_trade_summary')
+            .select('partner_code, partner_name, partner_iso3, export_value_usd, import_value_usd')
+            .eq('reporter_code', 840)  # US code
+            .neq('partner_code', 0)    # Exclude World/global trade
+            .eq('year', 2023)  # Latest year
+            .order('export_value_usd', desc=True)  # Order by exports first
+            .limit(5)
+            .execute()
+        )
+        
+        # Get tariff rates for each partner
+        partner_tariffs = []
+        for partner in top_partners_query.data:
+            # Get tariff rate that partner charges on US imports
+            partner_tariff_on_us = (
+                supabase.table('view_tariff_summary')
+                .select('simple_average')
+                .eq('reporter_code', partner['partner_code'])
+                .eq('partner_code', 840)  # US code
+                .eq('tariff_type', 'AHS')
+                .eq('year', 2023)
+                .limit(1)
+                .execute()
+            )
+            
+            # Get US tariff rate on partner's imports
+            us_tariff_on_partner = (
+                supabase.table('view_tariff_summary')
+                .select('simple_average')
+                .eq('reporter_code', 840)  # US code
+                .eq('partner_code', partner['partner_code'])
+                .eq('tariff_type', 'AHS')
+                .eq('year', 2023)
+                .limit(1)
+                .execute()
+            )
+            
+            partner_tariffs.append({
+                "country_id": partner['partner_code'],
+                "country_name": partner['partner_name'],
+                "country_code": partner['partner_iso3'],
+                "total_trade": partner['export_value_usd'] + partner['import_value_usd'],
+                "tariff_on_us": partner_tariff_on_us.data[0]['simple_average'] if partner_tariff_on_us.data else None,
+                "us_tariff": us_tariff_on_partner.data[0]['simple_average'] if us_tariff_on_partner.data else None
+            })
+        
+        # Sort the final results by total trade volume
+        partner_tariffs.sort(key=lambda x: x['total_trade'], reverse=True)
+        
+        return {
+            "partners": partner_tariffs
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching tariff rankings: {str(e)}") 

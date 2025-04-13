@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
-from typing import Dict, Optional, TypedDict
+from typing import Dict, Optional, TypedDict, Any
 from functools import lru_cache
+from ..utils.json_cache import json_cache
 
 class CountryData(TypedDict):
     id: int
@@ -9,13 +10,12 @@ class CountryData(TypedDict):
     name: str
     trade_region: Optional[str]
 
-@lru_cache()
+@lru_cache(maxsize=1)
 def load_country_reference() -> Dict[int, CountryData]:
-    """Load country reference data from JSON file and cache it"""
-    data_path = Path(__file__).parent.parent.parent / 'data' / 'country_reference.json'
-    with open(data_path, 'r') as f:
-        countries = json.load(f)
-    return {country['id']: country for country in countries}
+    """Load country reference data from cache"""
+    data = json_cache.get_country_reference()
+    # Convert list to dictionary with id as key
+    return {country['id']: country for country in data}
 
 def get_country_by_id(country_id: int) -> Optional[CountryData]:
     """Get country data by ID"""
@@ -23,16 +23,16 @@ def get_country_by_id(country_id: int) -> Optional[CountryData]:
     return countries.get(country_id)
 
 def get_iso3_by_id(country_id: int) -> Optional[str]:
-    """Get ISO3 code for a country ID"""
+    """Get ISO3 code by country ID"""
     country = get_country_by_id(country_id)
     return country['iso3_code'] if country else None
 
-def get_trade_region_by_id(country_id: int) -> Optional[str]:
-    """Get trade region for a country ID"""
-    country = get_country_by_id(country_id)
-    return country['trade_region'] if country else None
-
 def get_name_by_id(country_id: int) -> Optional[str]:
-    """Get country name for a country ID"""
+    """Get country name by ID"""
     country = get_country_by_id(country_id)
-    return country['name'] if country else None 
+    return country['name'] if country else None
+
+def get_trade_region_by_id(country_id: int) -> Optional[str]:
+    """Get trade region by country ID"""
+    country = get_country_by_id(country_id)
+    return country['trade_region'] if country else None 

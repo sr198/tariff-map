@@ -8,10 +8,12 @@ from ..utils.country_reference import (
     get_name_by_id,
     get_trade_region_by_id
 )
+from ..utils.json_cache import json_cache
 from ..cache import cache
 import json
 from datetime import datetime
 from pathlib import Path
+from supabase import Client
 
 router = APIRouter(
     prefix="/api/trade",
@@ -19,20 +21,8 @@ router = APIRouter(
 )
 
 def load_trump_tariffs() -> List[Dict[str, Any]]:
-    """Load Trump tariff data from JSON file"""
-    # Try to get from cache first
-    cache_key = "trump_tariffs"
-    cached_data = cache.get(cache_key)
-    if cached_data:
-        return cached_data
-    
-    data_path = Path(__file__).parent.parent.parent / 'data' / 'us_tariff_full_summary.json'
-    with open(data_path, 'r') as f:
-        data = json.load(f)
-        
-    # Cache the data with a long TTL (30 days) since it rarely changes
-    cache.set(cache_key, data, ttl_seconds=86400 * 30)
-    return data
+    """Load Trump tariff data from cache"""
+    return json_cache.get_trump_tariffs()
 
 @router.get("/countries", response_model=List[Country])
 async def get_countries():
@@ -292,21 +282,22 @@ async def get_country_details(
         # Format Trump tariff data
         trump_tariff_entries = []
         if trump_tariff_data:
-            # Load tariff commentary
-            with open('data/us_tariff_commentary.json', 'r') as f:
-                tariff_commentary = json.load(f)
+            # Get tariff commentary from cache
+            tariff_commentary = json_cache.get_tariff_commentary()
             
             if trump_tariff_data.get('tariff_rate_1'):
+                rate_1_commentary = tariff_commentary.get('tariff_rate_1', {})
                 trump_tariff_entries.append(TrumpTariffEntry(
                     rate=float(trump_tariff_data['tariff_rate_1'].strip('%')),
-                    date="2025-04-02",
-                    description=tariff_commentary.get('tariff_rate_1', 'First Trump tariff rate')
+                    date=rate_1_commentary.get('date', '2025-04-02'),
+                    description=rate_1_commentary.get('commentary', 'First Trump tariff rate')
                 ))
             if trump_tariff_data.get('tariff_rate_2'):
+                rate_2_commentary = tariff_commentary.get('tariff_rate_2', {})
                 trump_tariff_entries.append(TrumpTariffEntry(
                     rate=float(trump_tariff_data['tariff_rate_2'].strip('%')),
-                    date="2025-04-09",
-                    description=tariff_commentary.get('tariff_rate_2', 'Second Trump tariff rate')
+                    date=rate_2_commentary.get('date', '2025-04-09'),
+                    description=rate_2_commentary.get('commentary', 'Second Trump tariff rate')
                 ))
 
         # Get WTO tariff data
@@ -370,3 +361,65 @@ async def get_country_details(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching country details: {str(e)}")
+
+@router.get("/deficit-rankings")
+async def get_deficit_rankings(supabase: Client = Depends(get_supabase)):
+    """
+    Get top 5 countries with highest trade deficit with US
+    """
+    try:
+        # Get top 5 countries by trade deficit with US
+        deficit_query = (
+            supabase.table('view_trade_summary')
+            .select('partner_code, partner_name, partner_iso3, export_value_usd, import_value_usd, trade_deficit_usd')
+            .eq('reporter_code', 840)  # US code
+            .neq('partner_code', 0)    # Exclude World/global trade
+            .eq('year', 2023)  # Latest year
+            .order('trade_deficit_usd', desc=False)  # Order by deficit (most negative first)
+            .limit(5)
+            .execute()
+        )
+        
+        # Format the response
+        deficit_rankings = []
+        for country in deficit_query.data:
+            deficit_rankings.append({
+                "country_id": country['partner_code'],
+                "country_name": country['partner_name'],
+                "country_code": country['partner_iso3'],
+                "exports": country['export_value_usd'],
+                "imports": country['import_value_usd'],
+                "deficit": country['trade_deficit_usd']
+            })
+        
+        return {
+            "rankings": deficit_rankings
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching deficit rankings: {str(e)}")
+
+@router.get("/trump-tariff-timeline")
+async def get_trump_tariff_timeline():
+    """
+    Get the timeline of Trump-era tariff announcements
+    """
+    try:
+        # Get tariff commentary from cache
+        tariff_commentary = json_cache.get_tariff_commentary()
+        
+        # Format the timeline entries
+        timeline_entries = []
+        for rate_key, data in tariff_commentary.items():
+            timeline_entries.append({
+                "date": data["date"],
+                "commentary": data["commentary"]
+            })
+        
+        # Sort by date
+        timeline_entries.sort(key=lambda x: x["date"])
+        
+        return {
+            "timeline": timeline_entries
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching Trump tariff timeline: {str(e)}")

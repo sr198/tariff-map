@@ -1,4 +1,11 @@
 {
-    "tariff_rate_1": "First Trump reciprocal tariffs on all countries",
-    "tariff_rate_2": "90-day pause of higher reciprocal tariff rates for most countries."
+    "tariff_rate_2":{
+        "commentary": "90-day pause of higher reciprocal tariff rates for most countries.",
+        "date": "2025-04-09"
+    },
+    "tariff_rate_1":{
+        "commentary": "First Trump reciprocal tariffs on all countries",
+        "date": "2025-04-02"
+    }
+    
 }

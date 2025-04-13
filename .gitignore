@@ -93,3 +93,4 @@ backend/test.csv
 .cursorrules
 .idea/
 .vscode/
+.cursor/

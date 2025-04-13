@@ -1,7 +1,53 @@
+import json
+import os
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, List
 import threading
 import time
+
+CACHE_DIR = Path(__file__).parent.parent / 'cache'
+CACHE_DIR.mkdir(exist_ok=True)
+
+def get_cache_path(key: str) -> Path:
+    """Get the path for a cache file based on the key"""
+    return CACHE_DIR / f"{key}.json"
+
+def get(key: str, max_age_hours: int = 24):
+    """Get a value from cache if it exists and is not too old"""
+    cache_path = get_cache_path(key)
+    
+    if not cache_path.exists():
+        return None
+        
+    # Check if cache is too old
+    file_age = datetime.now() - datetime.fromtimestamp(cache_path.stat().st_mtime)
+    if file_age > timedelta(hours=max_age_hours):
+        cache_path.unlink()  # Delete old cache
+        return None
+        
+    try:
+        with open(cache_path, 'r') as f:
+            return json.load(f)
+    except:
+        return None
+
+def set(key: str, value: any):
+    """Store a value in cache"""
+    cache_path = get_cache_path(key)
+    try:
+        with open(cache_path, 'w') as f:
+            json.dump(value, f)
+    except:
+        pass  # Silently fail if cache write fails
+
+def clear():
+    """Clear all cache files"""
+    for file in CACHE_DIR.glob('*.json'):
+        try:
+            file.unlink()
+        except:
+            pass
 
 class Cache:
     """

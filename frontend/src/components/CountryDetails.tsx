@@ -41,7 +41,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
   const [countryDetails, setCountryDetails] = useState<Country | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('ALL');
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('5Y');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +89,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       }
     });
     
-    return filtered;
+    // Sort by year in descending order (most recent first)
+    return filtered.sort((a, b) => b.year - a.year);
   }, [tradeData, timePeriod]);
 
   const latestData = useMemo(() => {
@@ -113,7 +114,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       {
         label: 'Exports',
         data: filteredData.map(item => item.export),
-        borderColor: 'rgb(16, 185, 129)',
+        borderColor: 'rgb(16, 185, 129)', // emerald-500
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true,
         tension: 0.4,
@@ -123,8 +124,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       {
         label: 'Imports',
         data: filteredData.map(item => item.import_),
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: 'rgb(59, 130, 246)', // blue-500
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -133,8 +134,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
       {
         label: 'Trade Deficit',
         data: filteredData.map(item => item.trade_deficit),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderColor: 'rgb(239, 68, 68)', // red-500
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -300,8 +301,8 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
         <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {countryDetails?.tariffs_on_us_imports?.year || countryDetails?.us_tariffs_on_imports?.year || '2023'})</h2>
         <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {countryName}</p>
         {countryDetails && (countryDetails.tariffs_on_us_imports || countryDetails.us_tariffs_on_imports) && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {countryDetails.tariffs_on_us_imports && (
                 <div className="bg-[#EAF4FF] rounded-lg p-4">
                   <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {countryName} on US Imports</div>
@@ -326,7 +327,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
                 </div>
               )}
             </div>
-            <div className="absolute bottom-2 right-2 text-[10px] text-gray-500 text-right">
+            <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
               Based on WTO's {countryDetails.tariffs_on_us_imports?.year || countryDetails.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
               <br />
               <span className="italic">(Note: This may differ from claims made by governments.)</span>
@@ -337,114 +338,126 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
 
       {/* Trade Details Section */}
       {latestData && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Trade Details</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">Total Exported to the US</div>
-              <div className="text-2xl font-semibold text-red-600">
-                ${formatLargeNumber(latestData.export)}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-1 text-navy-900">Trade Details</h2>
+          <p className="text-sm text-gray-600 mb-4">Latest trade statistics between the US and {countryName}</p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              
+              <div className="bg-[#EAF4FF] rounded-lg p-4">
+                <div className="text-sm text-navy-700 mb-1">Total US Export to {countryName}</div>
+                <div className="text-2xl font-semibold text-navy-900">
+                  ${formatLargeNumber(latestData.export)}
+                </div>
+                <div className="text-sm text-navy-600 mt-2">
+                  Data from {latestData.year}
+                </div>
               </div>
-              <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">Total Imported from the US</div>
-              <div className="text-2xl font-semibold text-emerald-600">
-                ${formatLargeNumber(latestData.import_)}
+
+              <div className="bg-[#EAF4FF] rounded-lg p-4">
+                <div className="text-sm text-navy-700 mb-1">Total US Import from {countryName}</div>
+                <div className="text-2xl font-semibold text-navy-900">
+                  ${formatLargeNumber(latestData.import_)}
+                </div>
+                <div className="text-sm text-navy-600 mt-2">
+                  Data from {latestData.year}
+                </div>
               </div>
-              <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">US Trade Balance with {countryName}</div>
-              <div className={`text-2xl font-semibold ${latestData.trade_deficit < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-                ${formatLargeNumber(latestData.trade_deficit)}
+              
+              
+              
+              <div className="bg-[#EAF4FF] rounded-lg p-4">
+                <div className="text-sm text-navy-700 mb-1">US Trade Balance with {countryName}</div>
+                <div className={`text-2xl font-semibold ${latestData.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
+                  ${formatLargeNumber(latestData.trade_deficit)}
+                </div>
+                <div className="text-sm text-navy-600 mt-2">
+                  Data from {latestData.year}
+                </div>
               </div>
-              <div className="text-xs text-gray-500 mt-2">Latest data from {latestData.year}</div>
             </div>
-          </div>
 
-          {/* Time Period Selector */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setTimePeriod('5Y')}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  timePeriod === '5Y'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                5Y
-              </button>
-              <button
-                onClick={() => setTimePeriod('10Y')}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  timePeriod === '10Y'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                10Y
-              </button>
-              <button
-                onClick={() => setTimePeriod('ALL')}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  timePeriod === 'ALL'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                All
-              </button>
+            {/* Time Period Selector */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setTimePeriod('5Y')}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    timePeriod === '5Y'
+                      ? 'bg-navy-100 text-navy-800'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  5Y
+                </button>
+                <button
+                  onClick={() => setTimePeriod('10Y')}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    timePeriod === '10Y'
+                      ? 'bg-navy-100 text-navy-800'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  10Y
+                </button>
+                <button
+                  onClick={() => setTimePeriod('ALL')}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    timePeriod === 'ALL'
+                      ? 'bg-navy-100 text-navy-800'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  All
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Trade Chart */}
-          <div className="h-80">
-            <Line data={chartData} options={options} />
-          </div>
+            {/* Trade Chart */}
+            <div className="h-80">
+              <Line data={chartData} options={options} />
+            </div>
 
-          {/* Trade Table */}
-          <div className="mt-8 overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Year
-                  </th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Exported to the US
-                  </th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Imported from the US
-                  </th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    US Trade Balance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((item) => (
-                  <tr key={item.year}>
-                    <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                      {item.year}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                      {formatCurrency(item.export)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                      {formatCurrency(item.import_)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                      {formatCurrency(item.trade_deficit)}
-                    </td>
+            {/* Trade Table */}
+            <div className="mt-8 overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
+                      Year
+                    </th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
+                      US Export
+                    </th>
+                    
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
+                      US Import
+                    </th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-navy-700 uppercase tracking-wider">
+                      US Trade Balance
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredData.map((item) => (
+                    <tr key={item.year}>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        {item.year}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        {formatCurrency(item.export)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        {formatCurrency(item.import_)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        {formatCurrency(item.trade_deficit)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

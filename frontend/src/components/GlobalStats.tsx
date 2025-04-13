@@ -260,14 +260,31 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
         <h3 className="text-lg font-semibold mb-4">Trump-Era Tariff Timeline</h3>
         <div className="space-y-6">
           {[...tariffTimeline].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((entry, index) => (
-            <div key={index} className="relative pl-8 pb-6 border-l-2 border-gray-200">
-              <div className="absolute left-[-9px] top-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+            <div key={index} className="relative pl-12">
+              {/* Timeline line */}
+              {index !== tariffTimeline.length - 1 && (
+                <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
+              )}
+              {/* Timeline dot with calendar icon */}
+              <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-sm font-medium text-gray-900">{formatDate(entry.date)}</div>
-              <div className="mt-1 text-sm text-gray-600">{entry.commentary}</div>
+              {/* Timeline content */}
+              <div className="flex flex-col">
+                <div className="text-sm font-medium text-gray-900">{formatDate(entry.date)}</div>
+                {entry.commentary && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-sm text-gray-500">
+                      {entry.commentary}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

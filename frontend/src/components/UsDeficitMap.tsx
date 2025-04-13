@@ -251,7 +251,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
           <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
             US Trade Balance by Country
             <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
-              Click to see detailed trade data
+            Click on individual countries for more details.
             </span>
           </h2>
         </div>

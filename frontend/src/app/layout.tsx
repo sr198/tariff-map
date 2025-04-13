@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     ]
   },
   manifest: '/favicon/manifest.json',
-  themeColor: '#669966',
 };
 
 export const viewport: Viewport = {
@@ -27,6 +26,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   maximumScale: 5,
   userScalable: true,
+  themeColor: '#669966',
 };
 
 export default function RootLayout({

@@ -87,7 +87,12 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
 
   // Format date for display
   const formatDateForDisplay = useCallback((dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
   }, []);
 
   // Get dates from tariff data
@@ -242,7 +247,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
           <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
             Trump Tariff Rates by Country
             <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
-              Click to see rates as of different announcements
+              Click on individual countries for more details.
             </span>
           </h2>
         </div>
@@ -260,27 +265,32 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         </ComposableMap>
 
         {/* Date Tabs - Moved to bottom right */}
-        <div className="absolute bottom-1 right-1 md:bottom-4 md:right-4 z-10 flex space-x-1 md:space-x-2">
-          <button
-            onClick={() => setActiveTab(1)}
-            className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
-              activeTab === 1
-                ? 'bg-gray-700 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {dates.date1 ? formatDateForDisplay(dates.date1) : 'Loading...'}
-          </button>
-          <button
-            onClick={() => setActiveTab(2)}
-            className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
-              activeTab === 2
-                ? 'bg-gray-700 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {dates.date2 ? formatDateForDisplay(dates.date2) : 'Loading...'}
-          </button>
+        <div className="absolute bottom-1 right-1 md:bottom-4 md:right-4 z-10 flex flex-col items-end space-y-1">
+          <div className="text-[8px] md:text-xs text-gray-600 font-medium bg-white/90 backdrop-blur-sm rounded-t-md px-2 py-0.5">
+            US Reciprocal Tariff Timeline
+          </div>
+          <div className="flex space-x-1 md:space-x-2">
+            <button
+              onClick={() => setActiveTab(1)}
+              className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
+                activeTab === 1
+                  ? 'bg-gray-700 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {dates.date1 ? formatDateForDisplay(dates.date1) : 'Loading...'}
+            </button>
+            <button
+              onClick={() => setActiveTab(2)}
+              className={`px-1.5 py-0.5 md:px-3 md:py-1.5 rounded-md text-[10px] md:text-sm font-medium transition-colors ${
+                activeTab === 2
+                  ? 'bg-gray-700 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {dates.date2 ? formatDateForDisplay(dates.date2) : 'Loading...'}
+            </button>
+          </div>
         </div>
 
         {/* Color Legend - Make it smaller and more compact on mobile */}

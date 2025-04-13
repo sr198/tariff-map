@@ -241,69 +241,164 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
 
   return (
     <div className="space-y-8">
-      {/* Show Trump Tariffs first if viewing from tariff map */}
-      {mapType === 'tariff' && country?.trump_tariffs && country.trump_tariffs.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
-          <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="space-y-6">
-              {[...country.trump_tariffs]
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((tariff, index) => {
-                  // Calculate gradient color based on tariff rate
-                  const rate = tariff.rate;
-                  // Normalize to 0-1 range using 10% as minimum and 150% as maximum
-                  const minRate = 10;
-                  const maxRate = 150;
-                  const normalizedRate = Math.min(Math.max((rate - minRate) / (maxRate - minRate), 0), 1);
-                  
-                  // Create a gradient from orange (rgb(255, 165, 0)) to red (rgb(255, 0, 0))
-                  const red = 255;
-                  const green = Math.floor(165 * (1 - normalizedRate));
-                  const blue = 0;
-                  const color = `rgb(${red}, ${green}, ${blue})`;
-                  
-                  return (
-                    <div key={index} className="relative pl-12">
-                      {/* Timeline line */}
-                      {index !== (country.trump_tariffs?.length ?? 0) - 1 && (
-                        <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
-                      )}
-                      {/* Timeline dot with calendar icon */}
-                      <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      {/* Timeline content */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-900">{tariff.date}</span>
-                          <span className="text-2xl font-bold" style={{ color }}>
-                            {tariff.rate.toFixed(1)}%
-                          </span>
-                        </div>
-                        {tariff.description && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+      {/* Tariff Sections - Show first for tariff map, second for deficit map */}
+      {(mapType === 'tariff' || mapType === 'deficit') && (
+        <>
+          {/* Trump-Era Tariff Timeline */}
+          {country?.trump_tariffs && country.trump_tariffs.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
+              <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="space-y-6">
+                  {[...country.trump_tariffs]
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .map((tariff, index) => {
+                      // Calculate gradient color based on tariff rate
+                      const rate = tariff.rate;
+                      // Normalize to 0-1 range using 10% as minimum and 150% as maximum
+                      const minRate = 10;
+                      const maxRate = 150;
+                      const normalizedRate = Math.min(Math.max((rate - minRate) / (maxRate - minRate), 0), 1);
+                      
+                      // Create a gradient from orange (rgb(255, 165, 0)) to red (rgb(255, 0, 0))
+                      const red = 255;
+                      const green = Math.floor(165 * (1 - normalizedRate));
+                      const blue = 0;
+                      const color = `rgb(${red}, ${green}, ${blue})`;
+                      
+                      return (
+                        <div key={index} className="relative pl-12">
+                          {/* Timeline line */}
+                          {index !== (country.trump_tariffs?.length ?? 0) - 1 && (
+                            <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
+                          )}
+                          {/* Timeline dot with calendar icon */}
+                          <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                             </svg>
-                            <p className="text-sm text-gray-500">
-                              {tariff.description}
-                            </p>
                           </div>
-                        )}
+                          {/* Timeline content */}
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-gray-900">{tariff.date}</span>
+                              <span className="text-2xl font-bold" style={{ color }}>
+                                {tariff.rate.toFixed(1)}%
+                              </span>
+                            </div>
+                            {tariff.description && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                                <p className="text-sm text-gray-500">
+                                  {tariff.description}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* WTO Tariffs Section */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
+            <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
+            {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {country.tariffs_on_us_imports && (
+                    <div className="bg-[#EAF4FF] rounded-lg p-4">
+                      <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {propCountryName || country?.name || 'Unknown Country'} on US Imports</div>
+                      <div className="text-2xl font-semibold text-navy-900">
+                        {country.tariffs_on_us_imports.simple_average.toFixed(1)}%
+                      </div>
+                      <div className="text-sm text-navy-600 mt-2">
+                        <div className="flex items-center gap-1">
+                          <span>Simple Average:</span>
+                          <span className="font-medium">{country.tariffs_on_us_imports.simple_average.toFixed(1)}%</span>
+                          <div className="group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 cursor-help" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              The unweighted average of all applicable tariff rates. Each product is counted equally, regardless of trade volume.
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span>Weighted Average:</span>
+                          <span className="font-medium">{country.tariffs_on_us_imports.weighted_average.toFixed(1)}%</span>
+                          <div className="group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 cursor-help" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              Averages the tariffs based on how much each product is actually traded — gives a more realistic picture of effective tariff burden.
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-            </div>
+                  )}
+                  
+                  {country.us_tariffs_on_imports && (
+                    <div className="bg-[#EAF4FF] rounded-lg p-4">
+                      <div className="text-sm text-navy-700 mb-1">US Tariffs on {propCountryName || country?.name || 'Unknown Country'} Imports</div>
+                      <div className="text-2xl font-semibold text-navy-900">
+                        {country.us_tariffs_on_imports.simple_average.toFixed(1)}%
+                      </div>
+                      <div className="text-sm text-navy-600 mt-2">
+                        <div className="flex items-center gap-1">
+                          <span>Simple Average:</span>
+                          <span className="font-medium">{country.us_tariffs_on_imports.simple_average.toFixed(1)}%</span>
+                          <div className="group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 cursor-help" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              The unweighted average of all applicable tariff rates. Each product is counted equally, regardless of trade volume.
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span>Weighted Average:</span>
+                          <span className="font-medium">{country.us_tariffs_on_imports.weighted_average.toFixed(1)}%</span>
+                          <div className="group relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 cursor-help" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              Averages the tariffs based on how much each product is actually traded — gives a more realistic picture of effective tariff burden.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
+                  These values reflect baseline tariffs set under international trade agreements.
+                  <br />
+                  Countries may impose additional, time-bound tariffs (like Trump's) not reflected here.
+                  <br />
+                  Data collected and standardized by the World Trade Organization ({country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'}).
+                  <br />
+                  <span className="italic">(Note: This may differ from claims made by governments.)</span>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        </>
       )}
 
-      {/* Trade Details Section - Always show, but order depends on mapType */}
+      {/* Trade Details Section - Show first for deficit map, second for tariff map */}
       {latestData && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-1 text-navy-900">Trade Details</h2>
@@ -428,108 +523,6 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
           </div>
         </div>
       )}
-
-      {/* Show Trump Tariffs second if viewing from deficit map */}
-      {mapType === 'deficit' && country?.trump_tariffs && country.trump_tariffs.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-1">Trump-Era Tariff Timeline</h2>
-          <p className="text-sm text-gray-500 mb-4">Chronology of tariff hikes announced by the Trump administration against {propCountryName || country?.name || 'Unknown Country'}</p>
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="space-y-6">
-              {[...country.trump_tariffs]
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((tariff, index) => {
-                  // Calculate gradient color based on tariff rate
-                  const rate = tariff.rate;
-                  // Normalize to 0-1 range using 10% as minimum and 150% as maximum
-                  const minRate = 10;
-                  const maxRate = 150;
-                  const normalizedRate = Math.min(Math.max((rate - minRate) / (maxRate - minRate), 0), 1);
-                  
-                  // Create a gradient from orange (rgb(255, 165, 0)) to red (rgb(255, 0, 0))
-                  const red = 255;
-                  const green = Math.floor(165 * (1 - normalizedRate));
-                  const blue = 0;
-                  const color = `rgb(${red}, ${green}, ${blue})`;
-                  
-                  return (
-                    <div key={index} className="relative pl-12">
-                      {/* Timeline line */}
-                      {index !== (country.trump_tariffs?.length ?? 0) - 1 && (
-                        <div className="absolute left-5 top-6 w-0.5 h-full bg-gray-200"></div>
-                      )}
-                      {/* Timeline dot with calendar icon */}
-                      <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      {/* Timeline content */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-900">{tariff.date}</span>
-                          <span className="text-2xl font-bold" style={{ color }}>
-                            {tariff.rate.toFixed(1)}%
-                          </span>
-                        </div>
-                        {tariff.description && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                            </svg>
-                            <p className="text-sm text-gray-500">
-                              {tariff.description}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* WTO Tariffs Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
-        <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
-        {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {country.tariffs_on_us_imports && (
-                <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">Tariffs Imposed by {propCountryName || country?.name || 'Unknown Country'} on US Imports</div>
-                  <div className="text-2xl font-semibold text-navy-900">
-                    {country.tariffs_on_us_imports.simple_average.toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {country.tariffs_on_us_imports.weighted_average.toFixed(1)}%
-                  </div>
-                </div>
-              )}
-              
-              {country.us_tariffs_on_imports && (
-                <div className="bg-[#EAF4FF] rounded-lg p-4">
-                  <div className="text-sm text-navy-700 mb-1">US Tariffs on {propCountryName || country?.name || 'Unknown Country'} Imports</div>
-                  <div className="text-2xl font-semibold text-navy-900">
-                    {country.us_tariffs_on_imports.simple_average.toFixed(1)}%
-                  </div>
-                  <div className="text-sm text-navy-600 mt-2">
-                    Weighted Average: {country.us_tariffs_on_imports.weighted_average.toFixed(1)}%
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="text-[10px] text-gray-500 text-right border-t border-gray-100 pt-2">
-              Based on WTO's {country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'} database — used globally as the standard reference.
-              <br />
-              <span className="italic">(Note: This may differ from claims made by governments.)</span>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

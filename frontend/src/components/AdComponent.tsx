@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface AdComponentProps {
   adSlot: string;
@@ -13,14 +13,25 @@ const AdComponent: React.FC<AdComponentProps> = ({
   style = {},
   className = ''
 }) => {
+  const [isAdLoaded, setIsAdLoaded] = useState(false);
+
   useEffect(() => {
-    // Load Google AdSense
-    try {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('Error loading AdSense ad:', err);
-    }
+    // Wait for the AdSense script to load
+    const checkAdSense = setInterval(() => {
+      if (window.adsbygoogle) {
+        clearInterval(checkAdSense);
+        try {
+          // @ts-ignore
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+          setIsAdLoaded(true);
+        } catch (err) {
+          console.error('Error loading AdSense ad:', err);
+        }
+      }
+    }, 100);
+
+    // Cleanup interval
+    return () => clearInterval(checkAdSense);
   }, [adSlot]);
 
   return (
@@ -29,14 +40,18 @@ const AdComponent: React.FC<AdComponentProps> = ({
       <ins
         className="adsbygoogle"
         style={{ display: 'block', ...style }}
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        data-ad-client="ca-pub-8814239581528072"
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-full-width-responsive="true"
       />
       
-      {/* Media.net */}
-      <div id={adSlot} className="media-net-ad"></div>
+      {/* Loading placeholder */}
+      {!isAdLoaded && (
+        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+          <div className="text-gray-400 text-sm">Loading ad...</div>
+        </div>
+      )}
     </div>
   );
 };

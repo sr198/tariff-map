@@ -94,9 +94,12 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({
   }, [tradeData, timePeriod]);
 
   const latestData = useMemo(() => {
-    if (!filteredData.length) return null;
-    return filteredData[filteredData.length - 1];
-  }, [filteredData]);
+    if (!tradeData?.summary || tradeData.summary.length === 0) return null;
+    
+    // Sort by year in descending order and take the first (most recent) entry
+    const sortedData = [...tradeData.summary].sort((a, b) => b.year - a.year);
+    return sortedData[0];
+  }, [tradeData]);
 
   const formatLargeNumber = (value: number) => {
     // Convert from thousands to actual value

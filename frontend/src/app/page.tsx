@@ -229,7 +229,7 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="text-gray-500 hover:text-gray-700"
                   >
-                    World Bank Data (WITS)
+                    World Integrated Trade Solution (WITS) - World Bank
                   </a>
                 </li>
                 <li>

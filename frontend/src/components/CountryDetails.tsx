@@ -387,7 +387,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                   <br />
                   Countries may impose additional, time-bound tariffs (like Trump's) not reflected here.
                   <br />
-                  Data collected and standardized by the World Trade Organization ({country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'}).
+                  Data collected and standardized by the World Bank ({country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'}).
                   <br />
                   <span className="italic">(Note: This may differ from claims made by governments.)</span>
                 </div>
@@ -809,7 +809,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                   <br />
                   Countries may impose additional, time-bound tariffs (like Trump's) not reflected here.
                   <br />
-                  Data collected and standardized by the World Trade Organization ({country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'}).
+                  Data collected and standardized by the World Bank ({country.tariffs_on_us_imports?.year || country.us_tariffs_on_imports?.year || '2023'}).
                   <br />
                   <span className="italic">(Note: This may differ from claims made by governments.)</span>
                 </div>

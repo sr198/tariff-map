@@ -40,7 +40,7 @@ const createColorScale = () => {
 
 // US specific styling
 const US_STYLES = {
-  fill: '#9A3412',
+  fill: '#F1F5F9',
   stroke: '#FFFFFF',
   strokeWidth: 0.75,
 };
@@ -201,7 +201,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
     const countryId = geo?.id;
     const countryName = geo?.properties?.name;
     
-    if (!countryId || !countryName) return;
+    if (!countryId || !countryName || countryId === '840') return;
     
     onCountrySelect({
       name: countryName,
@@ -218,7 +218,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         const countryName = geo.properties.name;
         
         let fillColor = '#F1F5F9';
-        if (countryId === 'USA') {
+        if (countryId === '840') {
           fillColor = US_STYLES.fill;
         } else {
           const countryData = tariffData[countryId];
@@ -243,17 +243,18 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
                 stroke: '#FFFFFF',
                 strokeWidth: 0.75,
                 outline: 'none',
+                cursor: countryId === '840' ? 'default' : 'pointer',
               },
               hover: {
                 fill: fillColor,
-                stroke: '#000',
-                strokeWidth: 1,
+                stroke: countryId === '840' ? '#FFFFFF' : '#000',
+                strokeWidth: countryId === '840' ? 0.75 : 1,
                 outline: 'none',
               },
               pressed: {
                 fill: fillColor,
-                stroke: '#000',
-                strokeWidth: 1,
+                stroke: countryId === '840' ? '#FFFFFF' : '#000',
+                strokeWidth: countryId === '840' ? 0.75 : 1,
                 outline: 'none',
               },
             }}

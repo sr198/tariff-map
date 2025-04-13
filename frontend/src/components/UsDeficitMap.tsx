@@ -15,7 +15,7 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 // US specific styling
 const US_STYLES = {
-  fill: '#9A3412',
+  fill: '#F1F5F9',
   stroke: '#FFFFFF',
   strokeWidth: 0.75,
 };
@@ -174,7 +174,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
     const countryId = geo?.id;
     const countryName = geo?.properties?.name;
     
-    if (!countryId || !countryName) return;
+    if (!countryId || !countryName || countryId === '840') return;
     
     onCountrySelect({
       name: countryName,
@@ -224,7 +224,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
         const countryName = geo.properties.name;
         
         let fillColor = '#F1F5F9';
-        if (countryId === 'USA') {
+        if (countryId === '840') {
           fillColor = US_STYLES.fill;
         } else {
           const countryData = deficitMap[countryId];
@@ -253,17 +253,18 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
                 stroke: '#FFFFFF',
                 strokeWidth: 0.75,
                 outline: 'none',
+                cursor: countryId === '840' ? 'default' : 'pointer',
               },
               hover: {
                 fill: fillColor,
-                stroke: '#000',
-                strokeWidth: 1,
+                stroke: countryId === '840' ? '#FFFFFF' : '#000',
+                strokeWidth: countryId === '840' ? 0.75 : 1,
                 outline: 'none',
               },
               pressed: {
                 fill: fillColor,
-                stroke: '#000',
-                strokeWidth: 1,
+                stroke: countryId === '840' ? '#FFFFFF' : '#000',
+                strokeWidth: countryId === '840' ? 0.75 : 1,
                 outline: 'none',
               },
             }}

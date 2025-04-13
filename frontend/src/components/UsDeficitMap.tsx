@@ -246,6 +246,16 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
   return (
     <div className="relative w-full">
       <div style={{ aspectRatio: isMobile ? '4/3' : '21/9' }} className="relative">
+        {/* Map Title - Tab style */}
+        <div className="absolute top-1 left-1 md:top-4 md:left-4 z-20 bg-white/90 backdrop-blur-sm rounded-t-md shadow-lg px-2 py-1 md:px-4 md:py-2">
+          <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
+            US Trade Balance by Country
+            <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
+              Click to see detailed trade data
+            </span>
+          </h2>
+        </div>
+
         <ComposableMap
           projection="geoMercator"
           projectionConfig={projectionConfig}
@@ -262,13 +272,12 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
         <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4" 
         title='Green = Surplus (US exports more to them); Red = Deficit (US imports more from them)'>
           <div className="text-[8px] md:text-sm font-medium mb-0.5 md:mb-2">Trade Balance (USD)</div>
-          <div className="flex items-center gap-1">
-            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#10B981] via-[#F1F5F9] to-[#EF4444] rounded" />
-          </div>
-          <div className="flex justify-between mt-0.5 md:mt-1">
-            <div className="text-[6px] md:text-xs text-gray-600">Surplus</div>
-            <div className="text-[6px] md:text-xs text-gray-600">Balanced</div>
-            <div className="text-[6px] md:text-xs text-gray-600">Deficit</div>
+          <div className="flex flex-col gap-0.5">
+            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#10B981] to-[#EF4444] rounded" />
+            <div className="flex justify-between w-12 md:w-48">
+              <span className="text-[6px] md:text-xs text-gray-600">Surplus</span>
+              <span className="text-[6px] md:text-xs text-gray-600">Deficit</span>
+            </div>
           </div>
         </div>
 

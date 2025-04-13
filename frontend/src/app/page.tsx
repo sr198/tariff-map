@@ -137,7 +137,7 @@ export default function Home() {
                 onClick={() => setActiveMap('tariff')}
                 className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
                   activeMap === 'tariff'
-                    ? 'bg-gray-900 text-white'
+                    ? 'bg-gray-700 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 title='Shows average tariff rates the US imposes on each country, as of April 2025'
@@ -148,7 +148,7 @@ export default function Home() {
                 onClick={() => setActiveMap('deficit')}
                 className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
                   activeMap === 'deficit'
-                    ? 'bg-gray-900 text-white'
+                    ? 'bg-gray-700 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 title='Shows if the US has a trade surplus or deficit with each country.'

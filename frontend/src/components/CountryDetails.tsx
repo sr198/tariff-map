@@ -307,7 +307,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
 
           {/* WTO Tariffs Section */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
+            <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (World Bank {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
             <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
             {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
               <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
@@ -729,7 +729,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
 
           {/* WTO Tariffs Section */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (WTO {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
+            <h2 className="text-xl font-semibold mb-1 text-navy-900">Official Tariff Records (World Bank {country?.tariffs_on_us_imports?.year || country?.us_tariffs_on_imports?.year || '2023'})</h2>
             <p className="text-sm text-gray-600 mb-4">Latest verified tariff averages between the US and {propCountryName || country?.name || 'Unknown Country'}</p>
             {country && (country.tariffs_on_us_imports || country.us_tariffs_on_imports) && (
               <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">

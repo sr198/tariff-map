@@ -7,8 +7,45 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "US Tariff Map",
-  description: "Interactive visualization of US trade tariffs and relationships",
+  title: "US Tariff Map - Interactive Trade Visualization",
+  description: "Explore US trade relationships through an interactive map. Visualize trade deficits, tariffs, and economic relationships between the US and other countries. Perfect for economists, students, and trade analysts.",
+  keywords: "US trade, trade deficit, tariffs, trade visualization, economic map, US imports, US exports, trade balance, international trade, economic data, tariff map, trade map, deficit map, trade analysis, trade relationships, global trade, trade statistics, trade policy, economic relationships, trade data, interactive map, data visualization",
+  authors: [{ name: "Srijan Nepal" }],
+  creator: "Srijan Nepal",
+  publisher: "Aiselu AI - TariffMap.Live",
+  openGraph: {
+    title: "US Tariff and Trade Map - Interactive Trade Visualization",
+    description: "Explore US trade relationships through an interactive map. Visualize trade deficits, tariffs, and economic relationships between the US and other countries.",
+    url: "https://yourdomain.com",
+    siteName: "US Tariff Map",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "US Tariff Map Preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "US Tariff Map - Interactive Trade Visualization",
+    description: "Explore US trade relationships through an interactive map. Visualize trade deficits, tariffs, and economic relationships.",
+    images: ["/twitter-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: [
       { url: '/favicon/favicon.svg', type: 'image/svg+xml' }

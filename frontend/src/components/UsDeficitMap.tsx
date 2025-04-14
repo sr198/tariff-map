@@ -297,7 +297,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
           <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
             US Trade Balance by Country
             <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
-            Click on individual countries for more details.
+              Interactive map showing US trade imbalances and country-wise trade relationships. Click for detailed import-export data and free trade agreement impacts.
             </span>
           </h2>
         </div>
@@ -316,7 +316,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
 
         {/* Color Legend - Make it smaller and more compact on mobile */}
         <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4" 
-        title='Green = Surplus (US exports more to them); Red = Deficit (US imports more from them)'>
+        title='Analyze US trade surplus and deficit relationships by country'>
           <div className="text-[8px] md:text-sm font-medium mb-0.5 md:mb-2">Trade Balance (USD)</div>
           <div className="flex flex-col gap-0.5">
             <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#10B981] to-[#EF4444] rounded" />

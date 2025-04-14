@@ -87,13 +87,16 @@ export default function Home() {
             <div className="flex items-center space-x-3">
               <img
                 src="/logo/logo.svg"
-                alt="Tariff Map Logo"
+                alt="US Tariff Map - Interactive Global Trade Visualization"
                 className="h-8 w-8"
               />
               <div>
                 <h1 className="text-lg font-semibold tracking-tight text-gray-1000 font-display">
                   US Tariff and Trade Lens
                 </h1>
+                <p className="text-xs text-gray-500">
+                  Interactive US Trade and Tariff Map by Country
+                </p>
               </div>
             </div>
 
@@ -128,7 +131,7 @@ export default function Home() {
                     ? 'bg-gray-700 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                title='Shows average tariff rates the US imposes on each country, as of April 2025'
+                title='Explore US tariff rates by country, including Trump tariffs and World Bank tariff data'
               >
                 Tariff Map
               </button>
@@ -139,7 +142,7 @@ export default function Home() {
                     ? 'bg-gray-700 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                title='Shows if the US has a trade surplus or deficit with each country.'
+                title='Analyze US trade imbalances and country-wise trade relationships'
               >
                 Deficit Map
               </button>
@@ -196,7 +199,7 @@ export default function Home() {
               <div className="flex items-center space-x-2 mb-3">
                 <img
                   src="/logo/logo.svg"
-                  alt="Tariff Map Logo"
+                  alt="US Tariff Map - Comprehensive Trade Data Visualization"
                   className="h-6 w-6"
                 />
                 <span className="text-base font-semibold tracking-tight text-gray-900 font-display">
@@ -204,7 +207,7 @@ export default function Home() {
                 </span>
               </div>
               <p className="text-sm text-gray-500">
-                Tracking global trade relationships and tariff impacts in real-time.
+                Comprehensive US trade and tariff data visualization tool. Explore country-wise trade relationships, import-export data, and customs duties.
               </p>
               <p className="text-sm text-gray-500 mt-4">
                 © {new Date().getFullYear()} TariffMap.live. All rights reserved.

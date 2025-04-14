@@ -184,15 +184,6 @@ export default function Home() {
                 )}
               </div>
             </section>
-            
-            {/* Bottom Ad - Horizontal Banner */}
-            <div className="w-full flex justify-center my-4">
-              <AdComponent 
-                adSlot="bottom-banner" 
-                adFormat="horizontal" 
-                className="w-full max-w-[728px] h-[90px]"
-              />
-            </div>
           </div>
         </main>
       </ErrorBoundary>

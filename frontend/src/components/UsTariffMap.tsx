@@ -332,13 +332,13 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
 
         {/* Color Legend - Make it smaller and more compact on mobile */}
         <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4" 
-        title='Explore US tariff rates and customs duties by country'>
+        title='Analyze US tariff rates and customs duties by country'>
           <div className="text-[8px] md:text-sm font-medium mb-0.5 md:mb-2">Tariff Rate (%)</div>
           <div className="flex flex-col gap-0.5">
-            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#10B981] to-[#EF4444] rounded" />
+            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#FFE4CC] via-[#FB923C] to-[#9A3412] rounded" />
             <div className="flex justify-between w-12 md:w-48">
-              <span className="text-[6px] md:text-xs text-gray-600">Low</span>
-              <span className="text-[6px] md:text-xs text-gray-600">High</span>
+              <span className="text-[6px] md:text-xs text-gray-600">0%</span>
+              <span className="text-[6px] md:text-xs text-gray-600">150%</span>
             </div>
           </div>
         </div>

@@ -286,9 +286,6 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         <div className="absolute top-1 left-1 md:top-4 md:left-4 z-20 bg-white/90 backdrop-blur-sm rounded-t-md shadow-lg px-2 py-1 md:px-4 md:py-2">
           <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
             US Tariff Rates by Country (2025)
-            <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
-              Interactive global tariff map showing US trade tariffs by country. Click for detailed tariff comparison and World Bank tariff data.
-            </span>
           </h2>
         </div>
 

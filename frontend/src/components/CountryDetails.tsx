@@ -509,24 +509,49 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredData.map((item) => (
-                              <tr key={item.year} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {item.year}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  ${formatLargeNumber(item.export)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  ${formatLargeNumber(item.import_)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  <span className={`${item.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                    ${formatLargeNumber(item.trade_deficit)}
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
+                            {filteredData.map((item, index) => {
+                              // Find the maximum deficit for scaling the bar
+                              const maxDeficit = Math.max(...filteredData.map(d => Math.abs(d.trade_deficit)));
+                              const deficitPercentage = (Math.abs(item.trade_deficit) / maxDeficit) * 100;
+                              
+                              return (
+                                <tr 
+                                  key={item.year} 
+                                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
+                                    Math.abs(item.trade_deficit) === maxDeficit ? 'bg-red-50' : ''
+                                  } hover:bg-gray-100`}
+                                >
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {item.year}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatLargeNumber(item.export)}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatLargeNumber(item.import_)}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1">
+                                        <div className="h-2 bg-red-100 rounded-full overflow-hidden">
+                                          <div 
+                                            className={`h-full rounded-full ${
+                                              item.trade_deficit < 0 ? 'bg-red-500' : 'bg-green-500'
+                                            }`}
+                                            style={{ width: `${deficitPercentage}%` }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <span className={`font-medium min-w-[80px] text-right ${
+                                        item.trade_deficit < 0 ? 'text-red-600' : 'text-green-600'
+                                      }`}>
+                                        ${formatLargeNumber(item.trade_deficit)}
+                                      </span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
@@ -645,24 +670,49 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredData.map((item) => (
-                              <tr key={item.year} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {item.year}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  ${formatLargeNumber(item.export)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  ${formatLargeNumber(item.import_)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  <span className={`${item.trade_deficit < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                    ${formatLargeNumber(item.trade_deficit)}
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
+                            {filteredData.map((item, index) => {
+                              // Find the maximum deficit for scaling the bar
+                              const maxDeficit = Math.max(...filteredData.map(d => Math.abs(d.trade_deficit)));
+                              const deficitPercentage = (Math.abs(item.trade_deficit) / maxDeficit) * 100;
+                              
+                              return (
+                                <tr 
+                                  key={item.year} 
+                                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
+                                    Math.abs(item.trade_deficit) === maxDeficit ? 'bg-red-50' : ''
+                                  } hover:bg-gray-100`}
+                                >
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {item.year}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatLargeNumber(item.export)}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatLargeNumber(item.import_)}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1">
+                                        <div className="h-2 bg-red-100 rounded-full overflow-hidden">
+                                          <div 
+                                            className={`h-full rounded-full ${
+                                              item.trade_deficit < 0 ? 'bg-red-500' : 'bg-green-500'
+                                            }`}
+                                            style={{ width: `${deficitPercentage}%` }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <span className={`font-medium min-w-[80px] text-right ${
+                                        item.trade_deficit < 0 ? 'text-red-600' : 'text-green-600'
+                                      }`}>
+                                        ${formatLargeNumber(item.trade_deficit)}
+                                      </span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

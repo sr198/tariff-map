@@ -327,7 +327,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
 
       {/* Deficit Rankings Section */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Top Countries with Trade Deficit</h3>
+        <h3 className="text-lg font-semibold mb-4">Top 5 U.S. Trade Partners and Deficit (2024)</h3>
         <div className="relative">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             <div className="min-w-[800px]">
@@ -341,22 +341,45 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {deficitRankings.map((country) => (
-                    <tr key={country.country_id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {country.country_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatLargeNumber(country.exports)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatLargeNumber(country.imports)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                        {formatLargeNumber(Math.abs(country.deficit))}
-                      </td>
-                    </tr>
-                  ))}
+                  {deficitRankings.map((country, index) => {
+                    // Find the maximum deficit for scaling the bar
+                    const maxDeficit = Math.max(...deficitRankings.map(c => Math.abs(c.deficit)));
+                    const deficitPercentage = (Math.abs(country.deficit) / maxDeficit) * 100;
+                    
+                    return (
+                      <tr 
+                        key={country.country_id}
+                        className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
+                          Math.abs(country.deficit) === maxDeficit ? 'bg-red-50' : ''
+                        }`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {country.country_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatLargeNumber(country.exports)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatLargeNumber(country.imports)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                              <div className="h-2 bg-red-100 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-red-500 rounded-full" 
+                                  style={{ width: `${deficitPercentage}%` }}
+                                />
+                              </div>
+                            </div>
+                            <span className="text-red-600 font-medium min-w-[80px] text-right">
+                              {formatLargeNumber(Math.abs(country.deficit))}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

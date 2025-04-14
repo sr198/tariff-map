@@ -102,14 +102,14 @@ export default function Home() {
               href="https://www.buymeacoffee.com/ignorant_monk"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="group flex items-center space-x-1.5 bg-amber-500/90 hover:bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-sm"
               title="Support this project with a coffee"
             >
-              <span className="hidden sm:inline">Buy me a coffee</span>
+              <span className="hidden sm:inline text-sm">Buy me a coffee</span>
               <img
                 src="/coffee-cup.svg"
                 alt="Coffee cup"
-                className="h-5 w-5 transform group-hover:rotate-12 transition-transform duration-300"
+                className="h-4.5 w-4.5 transform group-hover:rotate-12 transition-transform duration-300"
               />
             </a>
           </div>

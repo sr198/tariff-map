@@ -82,7 +82,7 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
   } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(2);
   const { tariffData, loading, error } = useUsTariffData();
 
   // Add scroll event listener to hide tooltip

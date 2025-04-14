@@ -125,7 +125,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
     labels: [...filteredData].reverse().map(item => item.year),
     datasets: [
       {
-        label: 'Exports',
+        label: 'US Exports',
         data: [...filteredData].reverse().map(item => item.export),
         borderColor: 'rgb(16, 185, 129)', // emerald-500
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -135,7 +135,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
         pointHoverRadius: 6,
       },
       {
-        label: 'Imports',
+        label: 'US Imports',
         data: [...filteredData].reverse().map(item => item.import_),
         borderColor: 'rgb(59, 130, 246)', // blue-500
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -143,17 +143,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-      },
-      {
-        label: 'Trade Balance',
-        data: [...filteredData].reverse().map(item => item.trade_deficit),
-        borderColor: 'rgb(239, 68, 68)', // red-500
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
+      }
     ],
   };
 
@@ -190,9 +180,31 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
         callbacks: {
           label: (context: any) => {
             const value = context.raw;
-            return `${context.dataset.label}: ${formatCurrency(value)}`;
+            const label = context.dataset.label;
+            return `${label}: ${formatCurrency(value)}`;
           },
+          afterBody: (tooltipItems: any[]) => {
+            if (tooltipItems.length === 2) {
+              const exportValue = tooltipItems[0].raw;
+              const importValue = tooltipItems[1].raw;
+              const balance = exportValue - importValue;
+              const isDeficit = balance < 0;
+              return [
+                '',
+                `Trade ${isDeficit ? 'Deficit' : 'Surplus'}: ${formatCurrency(Math.abs(balance))}`
+              ];
+            }
+            return [];
+          }
         },
+        bodyFont: {
+          size: 12
+        },
+        afterBodyFont: {
+          weight: 'bold' as const,
+          size: 13
+        },
+        afterBodySpacing: 8,
       },
     },
     scales: {

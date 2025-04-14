@@ -295,10 +295,7 @@ const UsDeficitMap: React.FC<UsDeficitMapProps> = memo(({ onCountrySelect }) => 
         {/* Map Title - Tab style */}
         <div className="absolute top-1 left-1 md:top-4 md:left-4 z-20 bg-white/90 backdrop-blur-sm rounded-t-md shadow-lg px-2 py-1 md:px-4 md:py-2">
           <h2 className="text-[10px] md:text-sm font-medium text-gray-900">
-            US Trade Balance by Country
-            <span className="block text-[8px] md:text-xs text-gray-500 font-normal">
-              Interactive map showing US trade imbalances and country-wise trade relationships. Click for detailed import-export data and free trade agreement impacts.
-            </span>
+            US Trade Balance by Country (2024)
           </h2>
         </div>
 

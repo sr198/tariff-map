@@ -145,7 +145,7 @@ const CountryDetails: React.FC<CountryDetailsProps> = ({ countryId: propCountryI
         pointHoverRadius: 6,
       },
       {
-        label: 'Trade Deficit',
+        label: 'Trade Balance',
         data: [...filteredData].reverse().map(item => item.trade_deficit),
         borderColor: 'rgb(239, 68, 68)', // red-500
         backgroundColor: 'rgba(239, 68, 68, 0.1)',

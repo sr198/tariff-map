@@ -5,7 +5,7 @@ import {
   Geography,
   ZoomableGroup
 } from 'react-simple-maps';
-import { scaleLinear } from 'd3-scale';
+import { scaleThreshold } from 'd3-scale';
 import { useUsTariffData } from '../hooks/useUsTariffData';
 import MapTooltip from './MapTooltip';
 
@@ -25,16 +25,17 @@ const COLOR_STOPS = [
 
 // Memoize the color scale function
 const createColorScale = () => {
-  return scaleLinear<string>()
-    .domain([0, 25, 50, 75, 100, 125, 150])
+  return scaleThreshold<number, string>()
+    .domain([10, 15, 20, 30, 50, 100, 150])
     .range([
-      '#FFE4CC', // 0% - Brighter light orange
-      '#FFD4A3', // 25% - Brighter light orange
-      '#FB923C', // 50% - Orange
-      '#F97316', // 75% - Dark orange
-      '#EA580C', // 100% - Darker orange
-      '#C2410C', // 125% - Deep orange
-      '#9A3412'  // 150% - Pure dark orange
+      '#E0E0E0', // 0–10% (neutral gray)
+      '#FFE4CC', // 10–15%
+      '#FFD4A3', // 15–20%
+      '#FB923C', // 20–30%
+      '#F97316', // 30–50%
+      '#EA580C', // 50–100%
+      '#C2410C', // 100–150%
+      '#9A3412'  // >150%
     ]);
 };
 
@@ -331,14 +332,24 @@ const UsTariffMap: React.FC<UsTariffMapProps> = memo(({ onCountrySelect }) => {
         </div>
 
         {/* Color Legend - Make it smaller and more compact on mobile */}
-        <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4" 
-        title='Analyze US tariff rates and customs duties by country'>
+
+        <div className="absolute left-1 md:left-4 bottom-1 md:bottom-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 md:p-4"
+          title="Analyze US tariff rates and customs duties by country">
           <div className="text-[8px] md:text-sm font-medium mb-0.5 md:mb-2">Tariff Rate (%)</div>
           <div className="flex flex-col gap-0.5">
-            <div className="h-1 md:h-2 w-12 md:w-48 bg-gradient-to-r from-[#FFE4CC] via-[#FB923C] to-[#9A3412] rounded" />
-            <div className="flex justify-between w-12 md:w-48">
+            <div className="flex w-fit overflow-hidden rounded">
+              <div className="h-1 md:h-2 w-2 md:w-6" style={{ backgroundColor: '#E0E0E0' }} title="<10%" />
+              <div className="h-1 md:h-2 w-2 md:w-6" style={{ backgroundColor: '#FFE4CC' }} title="10–15%" />
+              <div className="h-1 md:h-2 w-2 md:w-6" style={{ backgroundColor: '#FFD4A3' }} title="15–20%" />
+              <div className="h-1 md:h-2 w-3 md:w-8" style={{ backgroundColor: '#FB923C' }} title="20–30%" />
+              <div className="h-1 md:h-2 w-3 md:w-8" style={{ backgroundColor: '#F97316' }} title="30–50%" />
+              <div className="h-1 md:h-2 w-4 md:w-10" style={{ backgroundColor: '#EA580C' }} title="50–100%" />
+              <div className="h-1 md:h-2 w-4 md:w-10" style={{ backgroundColor: '#C2410C' }} title="100–150%" />
+              <div className="h-1 md:h-2 w-2 md:w-6" style={{ backgroundColor: '#9A3412' }} title=">150%" />
+            </div>
+            <div className="flex justify-between w-full">
               <span className="text-[6px] md:text-xs text-gray-600">0%</span>
-              <span className="text-[6px] md:text-xs text-gray-600">150%</span>
+              <span className="text-[6px] md:text-xs text-gray-600">150%+</span>
             </div>
           </div>
         </div>

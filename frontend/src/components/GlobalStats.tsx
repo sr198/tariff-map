@@ -327,7 +327,7 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
 
       {/* Deficit Rankings Section */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Top 5 U.S. Trade Partners and Deficit (2024)</h3>
+        <h3 className="text-lg font-semibold mb-4">Top 5 U.S. Trade Deficit Partners (2024)</h3>
         <div className="relative">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             <div className="min-w-[800px]">

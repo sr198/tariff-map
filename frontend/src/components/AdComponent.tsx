@@ -73,7 +73,7 @@ const AdComponent: React.FC<AdComponentProps> = ({
           minHeight: adFormat === 'horizontal' ? '90px' : '250px',
           ...style 
         }}
-        data-ad-client="ca-pub-8814239581528072"
+        data-ad-client="ca-pub-8977505484424540"
         data-ad-slot={adSlot}
         data-ad-format={getAdFormat()}
         data-full-width-responsive="true"

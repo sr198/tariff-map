@@ -93,13 +93,13 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          href="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8814239581528072"
+          href="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8977505484424540"
           as="script"
           crossOrigin="anonymous"
         />
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8814239581528072"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8977505484424540"
           crossOrigin="anonymous"
         />
       </head>

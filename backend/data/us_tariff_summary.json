@@ -126,6 +126,12 @@
     "tariff_rate_2": "10%"
   },
   {
+    "iso3_code": "BES",
+    "name": "Bosnia and Herzegovina",
+    "tariff_rate_1": "35%",
+    "tariff_rate_2": "10%"
+  },
+  {
     "iso3_code": "BWA",
     "name": "Botswana",
     "tariff_rate_1": "37%",
@@ -204,6 +210,12 @@
     "tariff_rate_2": "10%"
   },
   {
+    "iso3_code": "COG",
+    "name": "Republic of Congo",
+    "tariff_rate_1": "11%",
+    "tariff_rate_2": "10%"
+  },
+  {
     "iso3_code": "COK",
     "name": "Cook Islands",
     "tariff_rate_1": "10%",
@@ -213,6 +225,12 @@
     "iso3_code": "CRI",
     "name": "Costa Rica",
     "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "CIV",
+    "name": "Côte d'Ivoire",
+    "tariff_rate_1": "21%",
     "tariff_rate_2": "10%"
   },
   {
@@ -266,6 +284,12 @@
   {
     "iso3_code": "ECU",
     "name": "Ecuador",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "EGY",
+    "name": "Egypt",
     "tariff_rate_1": "10%",
     "tariff_rate_2": "10%"
   },
@@ -519,6 +543,12 @@
     "iso3_code": "LBR",
     "name": "Liberia",
     "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "LBY",
+    "name": "Libya",
+    "tariff_rate_1": "31%",
     "tariff_rate_2": "10%"
   },
   {
@@ -800,6 +830,12 @@
   {
     "iso3_code": "SEN",
     "name": "Senegal",
+    "tariff_rate_1": "10%",
+    "tariff_rate_2": "10%"
+  },
+  {
+    "iso3_code": "SLE",
+    "name": "Sierra Leone",
     "tariff_rate_1": "10%",
     "tariff_rate_2": "10%"
   },

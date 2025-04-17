@@ -98,3 +98,22 @@ body {
 .rsm-geography {
   outline: none;
 }
+
+/* Google Ad Styles */
+.google-ad-container {
+  margin: 1rem 0;
+  min-height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Responsive ad styles */
+@media (max-width: 768px) {
+  .google-ad-container {
+    margin: 0.5rem 0;
+  }
+}

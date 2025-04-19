@@ -137,7 +137,7 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
           Last updated: {new Date(marketData[Object.keys(marketData)[0]]?.last_updated || '').toLocaleString()}
         </div>
       </div>
-      <div className="grid grid-cols-6 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
         {Object.entries(marketData).map(([symbol, data]) => (
           <div 
             key={symbol} 

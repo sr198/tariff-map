@@ -125,36 +125,43 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
   }
 
   return (
-    <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 ${className}`}>
-      {Object.entries(marketData).map(([symbol, data]) => (
-        <div 
-          key={symbol} 
-          className={`rounded-md shadow-sm p-2 hover:shadow transition-all duration-300 border ${
-            data.change_90d >= 0 
-              ? 'bg-gradient-to-br from-green-50 to-white border-green-100' 
-              : 'bg-gradient-to-br from-red-50 to-white border-red-100'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="text-[10px] font-medium text-gray-500 truncate">{data.name}</h3>
-            <div className={`p-1 rounded ${
-              data.daily_change >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-            }`}>
-              {getIcon(symbol)}
+    <div className={className}>
+      <div className="flex justify-end mb-2">
+        <div className="text-[10px] text-gray-400">
+          Last updated: {new Date(marketData[Object.keys(marketData)[0]]?.last_updated || '').toLocaleString()}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+        {Object.entries(marketData).map(([symbol, data]) => (
+          <div 
+            key={symbol} 
+            className={`rounded-md shadow-sm p-2 hover:shadow transition-all duration-300 border ${
+              data.change_90d >= 0 
+                ? 'bg-gradient-to-br from-green-50 to-white border-green-100' 
+                : 'bg-gradient-to-br from-red-50 to-white border-red-100'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-[10px] font-medium text-gray-500 truncate">{data.name}</h3>
+              <div className={`p-1 rounded ${
+                data.daily_change >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+              }`}>
+                {getIcon(symbol)}
+              </div>
+            </div>
+            <div className="mb-1">
+              <span className="text-sm font-bold text-gray-900">
+                {data.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+              </span>
+            </div>
+            <div className="space-y-0.5">
+              <ChangeIndicator label="1D" change={data.daily_change} changePercent={data.daily_change_percent} />
+              <ChangeIndicator label="30D" change={data.change_30d} changePercent={data.change_30d_percent} />
+              <ChangeIndicator label="90D" change={data.change_90d} changePercent={data.change_90d_percent} />
             </div>
           </div>
-          <div className="mb-1">
-            <span className="text-sm font-bold text-gray-900">
-              {data.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-            </span>
-          </div>
-          <div className="space-y-0.5">
-            <ChangeIndicator label="1D" change={data.daily_change} changePercent={data.daily_change_percent} />
-            <ChangeIndicator label="30D" change={data.change_30d} changePercent={data.change_30d_percent} />
-            <ChangeIndicator label="90D" change={data.change_90d} changePercent={data.change_90d_percent} />
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import threading
 import time
 
 # Import routers
-from .routers import trade, tariffs
+from .routers import trade, tariffs, market
 from .cache import cache
 
 # Initialize FastAPI app
@@ -27,6 +27,7 @@ app.add_middleware(
 # Include routers
 app.include_router(trade.router)
 app.include_router(tariffs.router)
+app.include_router(market.router)
 
 @app.get("/")
 async def root():

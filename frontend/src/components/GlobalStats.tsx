@@ -14,6 +14,7 @@ import { fetchTradeSummary, fetchDeficitRankings } from '../services/tradeServic
 import type { TradeSummary, DeficitRanking } from '../services/tradeService';
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
+import MarketPulse from './MarketPulse';
 
 ChartJS.register(
   CategoryScale,
@@ -254,7 +255,13 @@ const GlobalStats: React.FC<GlobalStatsProps> = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Market Pulse Section */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Market Pulse</h2>
+        <MarketPulse />
+      </div>
+
       {/* Trump Tariff Timeline Section */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Trump-Era Tariff Timeline</h3>

@@ -98,3 +98,15 @@ class Cache:
 
 # Create a global cache instance
 cache = Cache(default_ttl_seconds=86400 * 7)  # Default TTL: 7 days 
+
+def get_cache(key: str) -> Optional[Any]:
+    """
+    Get a value from the global cache.
+    """
+    return cache.get(key)
+
+def set_cache(key: str, value: Any, ttl_seconds: Optional[int] = None) -> None:
+    """
+    Set a value in the global cache.
+    """
+    cache.set(key, value, ttl_seconds) 

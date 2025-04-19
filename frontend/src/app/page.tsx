@@ -9,7 +9,6 @@ import { fetchCountries } from '@/services/tradeService';
 import AdComponent from '@/components/AdComponent';
 import UsTariffMap from '@/components/UsTariffMap';
 import UsDeficitMap from '../components/UsDeficitMap';
-import GoogleAd from '@/components/GoogleAd';
 
 // Dynamically import the map components to avoid SSR issues
 const UsTariffMapComponent = dynamic(() => import('@/components/UsTariffMap'), {
@@ -158,15 +157,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Google Ad */}
-            <div className="my-6">
-              <GoogleAd 
-                slotId="7990259944"
-                format="auto"
-                className="w-full"
-              />
-            </div>
-
             {/* Details Section */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in mt-6">
               <div className="p-6">
@@ -197,29 +187,9 @@ export default function Home() {
                 )}
               </div>
             </section>
-
-            {/* Second Google Ad */}
-            <div className="my-6">
-              <GoogleAd 
-                slotId="7990259944"
-                format="auto"
-                className="w-full"
-              />
-            </div>
           </div>
         </main>
       </ErrorBoundary>
-
-      {/* Footer Ad */}
-      <div className="bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <GoogleAd 
-            slotId="5903152654"
-            format="auto"
-            className="w-full"
-          />
-        </div>
-      </div>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100">

@@ -80,22 +80,25 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
     }
   };
 
-  const ChangeIndicator = ({ change, changePercent }: { change: number; changePercent: number }) => (
-    <div className={`text-sm font-medium ${
-      change >= 0 ? 'text-green-600' : 'text-red-600'
-    }`}>
-      <span className="inline-flex items-center">
-        {change >= 0 ? (
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-          </svg>
-        ) : (
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        )}
-        {Math.abs(change).toFixed(2)} ({changePercent.toFixed(2)}%)
-      </span>
+  const ChangeIndicator = ({ label, change, changePercent }: { label: string; change: number; changePercent: number }) => (
+    <div className="flex items-center justify-between">
+      <span className="text-[9px] text-gray-500">{label}</span>
+      <div className={`text-[10px] font-medium ${
+        change >= 0 ? 'text-green-600' : 'text-red-600'
+      }`}>
+        <span className="inline-flex items-center">
+          {change >= 0 ? (
+            <svg className="w-2.5 h-2.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg className="w-2.5 h-2.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+          {Math.abs(change).toFixed(2)} ({changePercent.toFixed(1)}%)
+        </span>
+      </div>
     </div>
   );
 
@@ -122,45 +125,33 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
   }
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 ${className}`}>
+    <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 ${className}`}>
       {Object.entries(marketData).map(([symbol, data]) => (
         <div 
           key={symbol} 
-          className={`rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border ${
+          className={`rounded-md shadow-sm p-2 hover:shadow transition-all duration-300 border ${
             data.change_90d >= 0 
               ? 'bg-gradient-to-br from-green-50 to-white border-green-100' 
               : 'bg-gradient-to-br from-red-50 to-white border-red-100'
           }`}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-500">{data.name}</h3>
-            <div className={`p-2 rounded-lg ${
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-[10px] font-medium text-gray-500 truncate">{data.name}</h3>
+            <div className={`p-1 rounded ${
               data.daily_change >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
             }`}>
               {getIcon(symbol)}
             </div>
           </div>
-          <div className="mt-1">
-            <span className="text-2xl font-bold text-gray-900">
+          <div className="mb-1">
+            <span className="text-sm font-bold text-gray-900">
               {data.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
             </span>
           </div>
-          <div className="space-y-2 mt-4">
-            <div>
-              <span className="text-xs text-gray-500">Daily Change</span>
-              <ChangeIndicator change={data.daily_change} changePercent={data.daily_change_percent} />
-            </div>
-            <div>
-              <span className="text-xs text-gray-500">30-Day Change</span>
-              <ChangeIndicator change={data.change_30d} changePercent={data.change_30d_percent} />
-            </div>
-            <div>
-              <span className="text-xs text-gray-500">90-Day Change</span>
-              <ChangeIndicator change={data.change_90d} changePercent={data.change_90d_percent} />
-            </div>
-          </div>
-          <div className="mt-4 text-xs text-gray-400">
-            Updated: {new Date(data.last_updated).toLocaleTimeString()}
+          <div className="space-y-0.5">
+            <ChangeIndicator label="1D" change={data.daily_change} changePercent={data.daily_change_percent} />
+            <ChangeIndicator label="30D" change={data.change_30d} changePercent={data.change_30d_percent} />
+            <ChangeIndicator label="90D" change={data.change_90d} changePercent={data.change_90d_percent} />
           </div>
         </div>
       ))}

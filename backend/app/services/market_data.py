@@ -19,7 +19,8 @@ def get_market_data():
             "^TNX": "10Y Treasury Yield",
             "DX-Y.NYB": "USD Index",
             "CL=F": "Crude Oil",
-            "EEM": "Emerging Markets ETF"
+            "EEM": "Emerging Markets ETF",
+            "XLI": "Industrial Sector ETF"
         }
         
         data = {}

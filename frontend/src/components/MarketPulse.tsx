@@ -75,6 +75,12 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
+      case 'XLI':
+        return (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        );
       default:
         return null;
     }
@@ -131,26 +137,26 @@ const MarketPulse: React.FC<MarketPulseProps> = ({ className = '' }) => {
           Last updated: {new Date(marketData[Object.keys(marketData)[0]]?.last_updated || '').toLocaleString()}
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+      <div className="grid grid-cols-6 gap-5">
         {Object.entries(marketData).map(([symbol, data]) => (
           <div 
             key={symbol} 
-            className={`rounded-md shadow-sm p-2 hover:shadow transition-all duration-300 border ${
+            className={`rounded-md shadow-sm p-1.5 hover:shadow transition-all duration-300 border ${
               data.change_90d >= 0 
                 ? 'bg-gradient-to-br from-green-50 to-white border-green-100' 
                 : 'bg-gradient-to-br from-red-50 to-white border-red-100'
             }`}
           >
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-[10px] font-medium text-gray-500 truncate">{data.name}</h3>
-              <div className={`p-1 rounded ${
+            <div className="flex items-center justify-between mb-0.5">
+              <h3 className="text-[9px] font-bold text-gray-500 truncate">{data.name}</h3>
+              <div className={`p-0.5 rounded ${
                 data.daily_change >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
               }`}>
                 {getIcon(symbol)}
               </div>
             </div>
-            <div className="mb-1">
-              <span className="text-sm font-bold text-gray-900">
+            <div className="mb-0.5">
+              <span className="text-xs font-bold text-gray-900">
                 {data.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
               </span>
             </div>
